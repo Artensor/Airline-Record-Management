@@ -26,15 +26,18 @@ _ALLOWED_SORTS = {"id", "name", "city", "state", "country", "type"}
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 200
 
-# --------- Helpers ---------
-def _coerce_bool(value: Any, default: bool = False) -> bool:
-    """Coerce common truthy/falsy strings to bool."""
-    if value is None:
-        return default
-    if isinstance(value, bool):
-        return value
-    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+# Text normalization and comparison helpers
+def _norm(x: Any) -> str:
+    return str(x or "").strip()
 
+def _canonical_client_type(value: Any) -> str:
+    v = _norm(value).replace("_", " ").lower()
+    for opt in CLIENT_TYPES:
+        if opt.lower() == v:
+            return opt
+    raise InvalidInput(f"Invalid type. Allowed: {sorted(CLIENT_TYPES)}", {"type": value})
+
+# --------- Helpers ---------
 def _normalize_text(s: Any) -> str:
     """Return a trimmed string ('' for None)."""
     return str(s or "").strip()
@@ -77,8 +80,6 @@ def _validate_required_client_fields(payload: Mapping[str, Any]) -> None:
     )
 
 def _validate_client_formats(payload: Mapping[str, Any]) -> None:
-    """Validate enum/format-specific client fields."""
-    validate_enum(_normalize_text(payload.get("type")), CLIENT_TYPES, field="type")
     validate_phone(_normalize_text(payload.get("phone_number")))
     validate_zip(_normalize_text(payload.get("zip_code")))
 
@@ -108,6 +109,7 @@ def create_client(
 
     # 4) Optional address lines: convert empty strings to None for consistency.
     record = dict(payload)
+    record["type"] = _canonical_client_type(record.get("type"))
     for opt in ("address_line2", "address_line3"):
         if not _normalize_text(record.get(opt)):
             record[opt] = None
@@ -154,6 +156,9 @@ def update_client(
 
     # 5) Normalize optional address fields.
     patch = dict(updates)
+    if "type" in patch:
+        patch["type"] = _canonical_client_type(patch["type"])
+
     for opt in ("address_line2", "address_line3"):
         if opt in patch and not _normalize_text(patch.get(opt)):
             patch[opt] = None

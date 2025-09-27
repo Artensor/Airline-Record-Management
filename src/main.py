@@ -1,7 +1,7 @@
 from __future__ import annotations
 import os
 from pathlib import Path
-from flask import Flask, jsonify
+from flask import Flask, app, jsonify
 from src.conf import settings
 from src.conf.errors import DomainError, to_http
 from src.record.common.storage import ensure_dir
@@ -31,8 +31,13 @@ def create_app() -> Flask:
     def health():
         return jsonify({"status": "ok", "version": app.config["API_VERSION"]})
 
-    # Blueprints
+    #======== Blueprints ========
+    # Clients
     from src.record.clients.api import bp as clients_bp
     app.register_blueprint(clients_bp, url_prefix=f"/api/{app.config['API_VERSION']}/clients")
+
+    # Airlines
+    from src.record.airlines.api import bp as airlines_bp
+    app.register_blueprint(airlines_bp, url_prefix=f"/api/{app.config['API_VERSION']}/airlines")
 
     return app
