@@ -1,3 +1,3 @@
 # Allowed values used by validation and UI dropdowns
-CLIENT_TYPES = {"business", "leisure", "vip", "corporate"}
-AIRLINE_TYPES = {"national", "regional", "low_cost", "charter"}
+CLIENT_TYPES = {"Business", "Leisure", "VIP", "Corporate"}
+AIRLINE_TYPES = {"National", "Regional", "Low Cost", "Charter"}

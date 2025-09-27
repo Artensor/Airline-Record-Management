@@ -8,6 +8,7 @@ import pytest
 from flask import Flask
 from src.main import create_app
 import src.record.clients.repo as clients_repo
+import src.record.airlines.repo as airlines_repo
 
 @pytest.fixture(autouse=True)
 def reset_clients_repo(tmp_data_dir):
@@ -18,6 +19,14 @@ def reset_clients_repo(tmp_data_dir):
     # Optional: reset again after test to avoid lingering state
     if hasattr(clients_repo, "_reset_singleton_for_tests"):
         clients_repo._reset_singleton_for_tests()
+
+@pytest.fixture(autouse=True)
+def _reset_airlines_repo(tmp_data_dir):
+    if hasattr(airlines_repo, "_reset_singleton_for_tests"):
+        airlines_repo._reset_singleton_for_tests()
+    yield
+    if hasattr(airlines_repo, "_reset_singleton_for_tests"):
+        airlines_repo._reset_singleton_for_tests()
 
 @pytest.fixture()
 def tmp_data_dir(monkeypatch):
@@ -42,3 +51,4 @@ def app(tmp_data_dir: Path) -> Flask:
 def client(app: Flask):
     """Flask HTTP client for API endpoint tests."""
     return app.test_client()
+
