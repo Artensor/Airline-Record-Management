@@ -1,111 +1,74 @@
-"""Code to validate formats and other input rules.
-These helpers are pure functions used by service layers to enforce input
-rules.
-"""
-from __future__ import annotations
-import re
-from typing import Iterable, Mapping, Any
-from dateutil import parser
-from zoneinfo import ZoneInfo
+# ------------------------------------------------------------
+# validation.py — Small validation + date helpers
+# ------------------------------------------------------------
+from typing import Any, Iterable, Mapping
+from datetime import datetime, date
+from src.conf.errors import InvalidID, InvalidInput, DuplicateID, ImmutableID
 
-from src.conf.errors import InvalidID, InvalidInput, DuplicateID
-from src.conf.enums import CLIENT_TYPES, AIRLINE_TYPES
-
-# Liberal, human-friendly formats; not country-specific but pragmatic.
-PHONE_RE = re.compile(r"^[+\d][\d\s().-]{6,}$")
-ZIP_RE = re.compile(r"^[\w\s-]{3,12}$")
-
-def validate_int_id(value: Any, field: str = "id") -> int:
-    """Validate and coerce an ID field into a positive integer.
-    Args:
-        value: The provided ID value (string/int).
-        field: Field name for error messages.
-    Returns:
-        The integer ID (guaranteed > 0).
-    Raises:
-        InvalidID: If parsing fails or value <= 0.
-    """
+def require_int_id(value: Any, field: str = "id") -> int:
+    """Make sure an id is an integer > 0."""
+    if isinstance(value, bool):
+        # bool is a subclass of int; exclude it explicitly
+        raise InvalidID(f"{field} must be an integer")
     try:
         iv = int(value)
-    except (ValueError, TypeError):
+    except Exception:
         raise InvalidID(f"{field} must be an integer")
     if iv <= 0:
-        raise InvalidID(f"{field} must be > 0")
+        raise InvalidID(f"{field} must be a positive integer")
     return iv
 
-def validate_unique_id(items: Iterable[Mapping[str, Any]], candidate_id: int, field: str = "id") -> None:
-    """Ensure candidate_id is not already present among items.
+def ensure_unique_id(rows: Iterable[Mapping], new_id: int, field: str = "id") -> None:
+    """Ensure no existing record has the same id."""
+    for r in rows:
+        if int(r.get(field, -1)) == int(new_id):
+            raise DuplicateID(f"id already exists: {new_id}")
 
-    Args:
-        items: Iterable of dict-like records with 'id' fields.
-        candidate_id: The ID to validate.
-        field: Name of the ID field (usually 'id').
-
-    Raises:
-        DuplicateID: If an existing record has the same ID.
-    """
-    if any(int(x.get(field, -1)) == candidate_id for x in items):
-        raise DuplicateID(f"{field} already exists: {candidate_id}")
-
-
-def required_fields(payload: Mapping[str, Any], fields: Iterable[str]) -> None:
-    """Assert that required fields are present and non-empty strings.
-    Args:
-        payload: Input mapping (e.g., request JSON).
-        fields: Iterable of required field names.
-    Raises:
-        InvalidInput: If any required field is missing/empty.
-    """
-    missing = [f for f in fields if not str(payload.get(f, "")).strip()]
+def require_fields(payload: Mapping[str, Any], required: list[str]) -> None:
+    """Check a set of required fields are present and truthy."""
+    missing = [k for k in required if not payload.get(k)]
     if missing:
-        raise InvalidInput("Missing required fields", {"missing": missing})
+        raise InvalidInput(("Missing required fields", {"missing": missing}))
 
-def validate_enum(value: str, allowed: set[str], field: str = "type") -> None:
-    """Validate that a value belongs to an allowed set.
-    Args:
-        value: Provided string value.
-        allowed: Allowed string values for the field.
-        field: Field name for error messages.
-    Raises:
-        InvalidInput: If the value is not in the allowed set.
+def canonicalize(value: Any, allowed: set[str], field: str) -> str:
     """
-    if value not in allowed:
-        raise InvalidInput(f"Invalid {field}. Allowed: {sorted(allowed)}", {field: value})
+    Make enum values forgiving: case-insensitive, underscores/spaces ignored.
+    Returns the canonical form from 'allowed' or raises InvalidInput.
+    """
+    if value is None:
+        raise InvalidInput((f"Invalid {field}. Allowed: {sorted(allowed)}", {field: value}))
+    v = str(value).replace("_", " ").strip().lower()
+    for opt in allowed:
+        if opt.lower() == v:
+            return opt
+    raise InvalidInput((f"Invalid {field}. Allowed: {sorted(allowed)}", {field: value}))
 
-def validate_phone(phone: str) -> None:
-    """Validate phone number format.
-    Args:
-        phone: Phone number string.
-    Raises:
-        InvalidInput: If the format doesn't match the regex.
+def parse_iso_datetime(s: str) -> datetime:
     """
-    if not PHONE_RE.match(phone):
-        raise InvalidInput("Invalid phone number format", {"phone_number": phone})
+    Parse an ISO datetime string. Accepts 'YYYY-MM-DD' or 'YYYY-MM-DDTHH:MM(:SS)?'
+    and common 'Z' suffix. Returns a datetime (naive is fine for this project).
+    """
+    if not isinstance(s, str) or not s.strip():
+        raise InvalidInput(("Invalid date", {"date": s}))
+    txt = s.strip()
+    # Allow 'Z' suffix as UTC indicator for simple parsing
+    if txt.endswith("Z"):
+        txt = txt[:-1]
+    try:
+        if "T" in txt:
+            return datetime.fromisoformat(txt)
+        # If date only, set time to 00:00:00
+        return datetime.fromisoformat(txt + "T00:00:00")
+    except Exception:
+        raise InvalidInput(("Invalid date", {"date": s}))
 
-def validate_zip(zip_code: str) -> None:
-    """Validate zip/postal code format.
-    Args:
-        zip_code: Zip/postal code string.
-    Raises:
-        InvalidInput: If the format doesn't match the regex.
-    """
-    if not ZIP_RE.match(zip_code):
-        raise InvalidInput("Invalid zip/postal code format", {"zip_code": zip_code})
+def is_today_or_future(dt: datetime) -> bool:
+    """Return True if dt is today or later."""
+    return dt.date() >= date.today()
 
-def parse_datetime_to_utc(dt_str: str, default_tz: str) -> str:
-    """Parse an ISO-like datetime string and return a UTC ISO string.
-    Args:
-        dt_str: ISO-like datetime string (e.g., "2025-10-03T14:30:00-06:00").
-        default_tz: Time zone name for naive inputs (e.g., "America/Costa_Rica").
-    Returns:
-        ISO-8601 string in UTC.
-    Raises:
-        InvalidInput: If dt_str is blank or can't be parsed.
-    """
-    if not dt_str or not str(dt_str).strip():
-        raise InvalidInput("Date/time is required")
-    dt = parser.isoparse(str(dt_str).strip())
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=ZoneInfo(default_tz))
-    dt_utc = dt.astimezone(ZoneInfo("UTC"))
-    return dt_utc.isoformat()
+def forbid_identity_change(path_id: int, body: Mapping[str, Any], field: str = "id") -> None:
+    """Block changes to identity fields during updates."""
+    if field in body:
+        body_id = require_int_id(body[field], field=field)
+        if body_id != path_id:
+            raise ImmutableID("ID in body must match path and cannot change")

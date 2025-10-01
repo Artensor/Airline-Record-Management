@@ -1,11 +1,11 @@
-from __future__ import annotations
+# ------------------------------------------------------------
+# settings.py — Small project settings with sensible defaults
+# ------------------------------------------------------------
 from pathlib import Path
+import os
 
-# Path to /src
-SRC_ROOT = Path(__file__).resolve().parents[1]
-# Default data dir inside the repo (portable after unzip)
-DATA_DIR = SRC_ROOT / "data"
+# Data directory where JSON files live. Overridable via DATA_DIR env.
+DATA_DIR = Path(os.getenv("DATA_DIR", "./data")).resolve()
 
-TIMEZONE = "Europe/London"
-API_VERSION = "v1"
+# Autosave turns on immediate writes after each change.
 AUTOSAVE = True

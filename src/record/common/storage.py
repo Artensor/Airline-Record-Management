@@ -1,29 +1,27 @@
-from __future__ import annotations
-import json, os, tempfile
+# ------------------------------------------------------------
+# storage.py — Helpers for JSON-backed lists on disk
+# ------------------------------------------------------------
 from pathlib import Path
+import json
 
 def ensure_dir(path: Path) -> None:
+    """Create a directory if it doesn't exist."""
     path.mkdir(parents=True, exist_ok=True)
 
 def load_list(file_path: Path) -> list[dict]:
+    """Read a JSON list from file, or return [] if missing/empty."""
     if not file_path.exists():
-        ensure_dir(file_path.parent)
-        file_path.write_text("[]", encoding="utf-8")
         return []
-    raw = file_path.read_text(encoding="utf-8").strip() or "[]"
-    data = json.loads(raw)
-    return data if isinstance(data, list) else []
-
-def save_list(file_path: Path, data: list[dict]) -> None:
-    ensure_dir(file_path.parent)
-    fd, tmp = tempfile.mkstemp(dir=str(file_path.parent), prefix=file_path.name, suffix=".tmp")
     try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        os.replace(tmp, file_path)
-    finally:
-        try:
-            if os.path.exists(tmp):
-                os.remove(tmp)
-        except OSError:
-            pass
+        with file_path.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data if isinstance(data, list) else []
+    except Exception:
+        # For class project: be forgiving if file is malformed.
+        return []
+
+def save_list(file_path: Path, rows: list[dict]) -> None:
+    """Write a JSON list to file (pretty for readability)."""
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    with file_path.open("w", encoding="utf-8") as f:
+        json.dump(rows, f, indent=2, ensure_ascii=False)
