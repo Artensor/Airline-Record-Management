@@ -1,141 +1,81 @@
-from __future__ import annotations
-
+# ------------------------------------------------------------
+# service.py (airlines) — Validation + business rules for airlines
+# ------------------------------------------------------------
 from typing import Any, Mapping, Optional
-
 from src.conf.enums import AIRLINE_TYPES
-from src.conf.errors import ImmutableID, InvalidInput, NotFound
-from src.record.common.search import filter_by_q
+from src.conf.errors import InvalidInput
 from src.record.common.validation import (
-    validate_unique_id,
-    required_fields,
-    validate_int_id
+    require_int_id, ensure_unique_id, require_fields, canonicalize, forbid_identity_change
 )
 from src.record.airlines.repo import AirlinesRepo, get_repo
+from src.record.flights.repo import get_repo as get_flights_repo
+from src.record.common.validation import parse_iso_datetime, is_today_or_future
 
-# simple normalize helpers
-def _norm(x: Any) -> str:
-    return str(x or "").strip()
-
-def _eq_ci(a: Any, b: Any) -> bool:
-    return _norm(a).lower() == _norm(b).lower()
-
-# fields we search over (case-insensitive)
-_SEARCH_FIELDS = ["id", "company_name", "type"]
-
-# allowed sort keys
-_ALLOWED_SORTS = {"id", "company_name", "type"}
-
-DEFAULT_LIMIT = 50
-MAX_LIMIT = 200
-
-def _safe_sort_key(key: str):
-    k = key if key in _ALLOWED_SORTS else "id"
-    def _key(rec: Mapping[str, Any]):
-        v = rec.get(k)
-        if k == "id":
+REQUIRED_FIELDS = ["id", "type", "company_name"]
+# Check if the airline has flights today or in the future and avoid deletion if so.
+def _has_future_flights_for_airline(airline_id: int) -> bool:
+    """Check if the airline has flights today or in the future."""
+    frepo = get_flights_repo()
+    for f in frepo.list_all():
+        if int(f.get("airline_id", -1)) == int(airline_id):
             try:
-                return int(v) if v is not None else 0
+                dt = parse_iso_datetime(f.get("date", ""))
+                if is_today_or_future(dt):
+                    return True
             except Exception:
-                return 0
-        return str(v or "").lower()
-    return _key
-
-def _validate_required(payload: Mapping[str, Any]) -> None:
-    required_fields(payload, ["id", "type", "company_name"])
-
-def _validate_formats(payload: Mapping[str, Any]) -> None:
-    # No-op: we canonicalize `type` with _canonical_airline_type().
-    return
-
-def _canonical_airline_type(value: Any) -> str:
-    """
-    Accepts 'national', 'National', 'low_cost', etc., and returns
-    the canonical value from AIRLINE_TYPES (e.g., 'National', 'Low Cost').
-    """
-    v = _norm(value).replace("_", " ").lower()
-    for opt in AIRLINE_TYPES:
-        if opt.lower() == v:
-            return opt
-    raise InvalidInput(f"Invalid type. Allowed: {sorted(AIRLINE_TYPES)}", {"type": value})
-
+                continue
+    return False
+# Create a new airline record after validating required fields and uniqueness.
 def create_airline(payload: Mapping[str, Any], repo: Optional[AirlinesRepo] = None) -> dict:
+    """Create an airline after basic validation."""
     repo = repo or get_repo()
-    _validate_required(payload)
-    airline_id = validate_int_id(payload.get("id"), field="id")
-    validate_unique_id(repo.list_all(), airline_id, field="id")
-
+    require_fields(payload, REQUIRED_FIELDS)
+    airline_id = require_int_id(payload.get("id"), field="id")
+    ensure_unique_id(repo.list_all(), airline_id, field="id")
     record = dict(payload)
-    record["type"] = _canonical_airline_type(record.get("type"))
+    record["type"] = canonicalize(record.get("type"), AIRLINE_TYPES, field="type")
     return repo.insert(record)
-
-def update_airline(airline_id: int, updates: Mapping[str, Any], repo: Optional[AirlinesRepo] = None) -> dict:
+# Retrieve a specific airline by its ID, raising NotFound if it doesn't exist.
+def get_airline(airline_id: int, repo: Optional[AirlinesRepo] = None) -> dict:
+    """Return one airline by id or raise NotFound."""
     repo = repo or get_repo()
-    airline_id = validate_int_id(airline_id, field="id")
-    if "id" in updates:
-        body_id = validate_int_id(updates["id"], field="id")
-        if body_id != airline_id:
-            raise ImmutableID("ID in body must match path and cannot change")
-    existing = repo.get_by_id(airline_id)
-    if not existing:
-        raise NotFound(f"Airline {airline_id} not found")
-    
+    airline_id = require_int_id(airline_id, field="id")
+    return repo.get_by_id(airline_id)
+# Update an existing airline record with allowed fields only.
+def update_airline(airline_id: int, updates: Mapping[str, Any], repo: Optional[AirlinesRepo] = None) -> dict:
+    """Update allowed fields; id cannot change."""
+    repo = repo or get_repo()
+    airline_id = require_int_id(airline_id, field="id")
+    forbid_identity_change(airline_id, updates, field="id")
     patch = dict(updates)
     if "type" in patch:
-        patch["type"] = _canonical_airline_type(patch["type"])
+        patch["type"] = canonicalize(patch["type"], AIRLINE_TYPES, field="type")
     return repo.update(airline_id, patch)
-
+# Delete an airline if there are no flights today or in the future associated with it.
 def delete_airline(airline_id: int, repo: Optional[AirlinesRepo] = None) -> None:
+    """Delete if there are no today/future flights for this airline."""
     repo = repo or get_repo()
-    airline_id = validate_int_id(airline_id, field="id")
+    airline_id = require_int_id(airline_id, field="id")
+    if _has_future_flights_for_airline(airline_id):
+        raise InvalidInput("Cannot delete airline: future or today flights exist")
     if not repo.delete(airline_id):
+        from src.conf.errors import NotFound
         raise NotFound(f"Airline {airline_id} not found")
-
-def get_airline(airline_id: int, repo: Optional[AirlinesRepo] = None) -> dict:
-    repo = repo or get_repo()
-    airline_id = validate_int_id(airline_id, field="id")
-    rec = repo.get_by_id(airline_id)
-    if not rec:
-        raise NotFound(f"Airline {airline_id} not found")
-    return rec
-
-def list_airlines(repo: Optional[AirlinesRepo] = None, *, limit: int = DEFAULT_LIMIT, offset: int = 0, sort: str = "id") -> dict:
+# Search airlines by company name with optional sorting.
+def search_airlines(q: str = "", sort: str = "company_name", repo: Optional[AirlinesRepo] = None) -> dict:
     """
-    List with pagination (kept like Clients for now).
+    Simple search (no pagination):
+      - q matches company_name (case-insensitive)
+      - sort by given field, defaults to company_name
+    Returns: {"count": N, "data": [ ... ]}
     """
     repo = repo or get_repo()
+    q = (q or "").strip().lower()
+    rows = repo.list_all()
+    if q:
+        rows = [r for r in rows if q in str(r.get("company_name", "")).lower()]
     try:
-        limit = max(0, min(int(limit), MAX_LIMIT))
-        offset = max(0, int(offset))
+        rows.sort(key=lambda r: r.get(sort, rows))
     except Exception:
-        raise InvalidInput("limit/offset must be integers")
-    sort_key = (_norm(sort).lower() or "id")
-    if sort_key not in _ALLOWED_SORTS:
-        raise InvalidInput(f"Invalid sort key. Allowed: {sorted(_ALLOWED_SORTS)}")
-    items = repo.list_all()
-    items_sorted = sorted(items, key=_safe_sort_key(sort_key))
-    return {
-        "data": items_sorted[offset: offset + limit] if limit > 0 else items_sorted[offset:],
-        "count": len(items_sorted),
-        "limit": limit,
-        "offset": offset,
-        "sort": sort_key,
-    }
-
-def search_airlines(repo: Optional[AirlinesRepo] = None, *, q: str = "", type: str | None = None, sort: str = "id") -> dict:
-    """
-    Search returns ALL matches (no pagination). This is the one change from Clients.
-    """
-    repo = repo or get_repo()
-    sort_key = (_norm(sort).lower() or "id")
-    if sort_key not in _ALLOWED_SORTS:
-        raise InvalidInput(f"Invalid sort key. Allowed: {sorted(_ALLOWED_SORTS)}")
-    items = repo.list_all()
-    items = filter_by_q(items, _SEARCH_FIELDS, q)
-    if _norm(type):
-        items = [r for r in items if _eq_ci(r.get("type"), type)]
-    items_sorted = sorted(items, key=_safe_sort_key(sort_key))
-    return {
-        "data": items_sorted,
-        "count": len(items_sorted),
-        "sort": sort_key,
-    }
+        rows.sort(key=lambda r: r.get("company_name", rows))
+    return {"count": len(rows), "data": rows}

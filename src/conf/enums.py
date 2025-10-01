@@ -1,3 +1,10 @@
-# Allowed values used by validation and UI dropdowns
-CLIENT_TYPES = {"Business", "Leisure", "VIP", "Corporate"}
-AIRLINE_TYPES = {"National", "Regional", "Low Cost", "Charter"}
+# ------------------------------------------------------------
+# enums.py — Allowed type values for clients and airlines
+# ------------------------------------------------------------
+CLIENT_TYPES = {
+    "Business", "Corporate", "Leisure", "VIP"
+}
+
+AIRLINE_TYPES = {
+    "Charter", "Low Cost", "National", "Regional"
+}
