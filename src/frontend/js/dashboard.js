@@ -13,6 +13,19 @@ const endpoints = {
 
 }
 
+async function deleteRecord(id){
+  if(!confirm("Are you sure you want to delete this record?")){
+    return;
+  } 
+   
+  const response = await fetch(`http://127.0.0.1:5000/api/v1/clients/${id}`, {method: "DELETE"});
+
+  if(response.ok){
+    alert("Record was deleted")
+  }else{
+    alert("Record wasn't deleted")
+  }
+}
 
 //removes active class from all tab buttons and adds hidden class to their content
 function resetTabs(tabs, contents) {
@@ -26,7 +39,7 @@ async function fetchTableData(endpoint) {
   try {
     const res = await fetch(`http://127.0.0.1:5000${endpoint}`);
     if (!res.ok) {
-      console.error(`Fetch failed with status ${res.status}`);
+      console.error(`Status ${res.status}`);
       return { data: [] };
     }
 
@@ -34,14 +47,12 @@ async function fetchTableData(endpoint) {
     console.log("Response:", json);
     return json;
   } catch (err) {
-    console.error("Eerror:", err);
+    console.error("Error:", err);
     return { data: [] };
   }
 }
 
-async function deleteRecord(type, id) {
 
-}
 
 //builds the table for each tab record selected
 function table(data, type, tableHeadings) {
@@ -51,7 +62,7 @@ function table(data, type, tableHeadings) {
     ${tableHeadings.map(h => {
       if (!h.key) {
         return `<td><a href="update_${type}_form.html?id=${item.id}">Edit</a>
-        <button onclick="deleteRecord('${type}', '${item.id}')">Delete</button></td>`
+        <button name="id" type="submit" value="${item.id}">Delete</button></td>`
       }
       else {
         return `<td>${item[h.key] ?? ""}</td>`
@@ -96,5 +107,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   tabs.forEach(tab => { tab.classList.add("active"); })
   tabs.forEach(tab => { tab.classList.add("active"); })
   content.removeAttribute("hidden");
+
+  function formSubmitHandler(event){
+    const id = event.submitter.value;
+    event.preventDefault();
+    deleteRecord(id)
+
+  }
+
+  content.addEventListener("submit", formSubmitHandler);
 
 })
