@@ -6,14 +6,13 @@
 </head>
 <body>
 <div class="tabs">
-  <button class="tab active" data-tab="clients" data-type="clients" data-endpoint="/api/v1/clients">Clients</button>
-  <button class="tab" data-tab="flights" data-type="flights" data-endpoint="/api/v1/flights">Flights</button>
-  <button class="tab" data-tab="airlines" data-type="airlines" data-endpoint="/api/v1/airlines">Airlines</button>
+  <a class="tab active" data-tab="clients" data-type="clients" href="?tab=clients">Clients</a>
+  <a class="tab" data-tab="flights" data-type="flights" href="?tab=flights">Flights</a>
+  <a class="tab" data-tab="airlines" data-type="airlines" href="?tab=airlines">Airlines</a>
 </div>
 
-<div id="clients" class="tab-content"></div>
-<div id="flights" class="tab-content hidden"></div>
-<div id="airlines" class="tab-content hidden"></div>
+<div id="content"></div>
+
  
   <!-- Load JavaScript file -->
   <script src="js/dashboard.js"></script>
