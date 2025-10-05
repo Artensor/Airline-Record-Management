@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   const headings = {
-    clients: [{label : "ID", key:"id"}, {label: "Type", key:"type"}, {label: "Name", key: "name"}, {label: "Address Line 1", key: "adress_line2"}, {label: "Address Line 2", key: "adress_line3"}, {label: "Address Line 3", key: "adress_line1"}, {label: "City", key: "city"}, {label: "State", key: "state"}, {label: "Country", key: "country"}, {label: "Phone", key: "phone_numnber"}, {label: "Actions"}],
-    flights: [{label: "Client", key: "client_id"}, {label: "Airline", key: "airline_id"}, {label: "date", key: "date"}, {label: "Start City", key: "start_city"}, {label: "End City", key: "end_city"}, {label: "Acitions"}],
-    airlines: [{label: "Company Name", key: "company_name"}, {label: "Actions"}]
+    clients: [{ label: "ID", key: "id" }, { label: "Type", key: "type" }, { label: "Name", key: "name" }, { label: "Address Line 1", key: "adress_line2" }, { label: "Address Line 2", key: "adress_line3" }, { label: "Address Line 3", key: "adress_line1" }, { label: "City", key: "city" }, { label: "State", key: "state" }, { label: "Country", key: "country" }, { label: "Phone", key: "phone_numnber" }, { label: "Actions" }],
+    flights: [{ label: "Client", key: "client_id" }, { label: "Airline", key: "airline_id" }, { label: "date", key: "date" }, { label: "Start City", key: "start_city" }, { label: "End City", key: "end_city" }, { label: "Acitions" }],
+    airlines: [{ label: "Company Name", key: "company_name" }, { label: "Actions", key: "actions" }]
   }
 
 
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const tableHeadings = headings[type];
 
-        selectedTabContent.innerHTML = table(data, tableHeadings);
+        selectedTabContent.innerHTML = table(data, tableHeadings, type);
 
         console.log("Server response:", data);
 
@@ -53,19 +53,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
     })
 
+    async function deleteRecord(type, id) {
 
-function table(data, tableHeadings) {
-  const headerRow = tableHeadings.map(h => `<th>${h.label}</th>`).join("");
-  const bodyRows = data.data.map(item =>
-    `<tr>${tableHeadings.map(h => `<td>${item[h.key] ?? ""}</td>`).join("")}</tr>`
-  ).join("");
+    }
 
-  return `
+    //builds the table for each tab record selected
+    function table(data, tableHeadings, type) {
+      const headerRow = tableHeadings.map(h => `<th>${h.label}</th>`).join("");
+      const bodyRows = data.data.map(item =>
+        `<tr>
+    ${tableHeadings.map(h => {
+          if (!h.key) {
+            return `<td><a href="update_${type}_form.html?id=${item.id}">Edit</a>
+        <button onclick="deleteRecord('${type}', '${item.id}')">Delete</button></td>`
+          }
+          else {
+            return `<td>${item[h.key] ?? ""}</td>`
+
+          }
+        }).join("")}
+    
+    </tr>`
+      ).join("");
+
+      return `
     <table border="1">
       <thead><tr>${headerRow}</tr></thead>
       <tbody>${bodyRows}</tbody>
     </table>
   `;
-}
+    }
   });
 })
