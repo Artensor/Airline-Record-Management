@@ -5,7 +5,17 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Load JavaScript files -->
+<div class="tabs">
+  <button class="tab active" data-tab="clients" data-type="clients" data-endpoint="/api/v1/clients?q=&sort=">Clients</button>
+  <button class="tab" data-tab="flights" data-type="flights" data-endpoint="/api/v1/flights?client_id=&airline_id=&q=">Flights</button>
+  <button class="tab" data-tab="airlines" data-type="airlines" data-endpoint="/api/v1/airlines?q=&sort=">Airlines</button>
+</div>
+
+<div id="clients" class="tab-content"></div>
+<div id="flights" class="tab-content hidden"></div>
+<div id="airlines" class="tab-content hidden"></div>
+ 
+  <!-- Load JavaScript file -->
   <script src="js/dashboard.js"></script>
     
 </body>
