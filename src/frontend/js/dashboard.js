@@ -76,11 +76,17 @@ document.addEventListener("DOMContentLoaded", () => {
     </tr>`
       ).join("");
 
-      return `
-    <table border="1">
+    return `
+    <div class="table-wrapper">
+    <div class="table-header">
+    
+      <a href="add_new_${type}_form.html" class="add-new-btn">+ Add New</a>
+      </div>
+      <table border="1">
       <thead><tr>${headerRow}</tr></thead>
       <tbody>${bodyRows}</tbody>
     </table>
+    </div>
   `;
     }
   });
