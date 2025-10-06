@@ -34,6 +34,6 @@ async function formSubmit(event) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("add_new_client_form")
+    const form = document.getElementById("add_new_clients_form")
     form.addEventListener("submit", formSubmit);
 });

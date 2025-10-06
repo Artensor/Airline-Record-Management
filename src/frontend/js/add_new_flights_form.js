@@ -13,7 +13,7 @@ async function formSubmit(event) {
         const res = await fetch(`http://127.0.0.1:5000/api/v1/flights`, {
             method: "POST",
             headers: { "Content-type": "application/json" },
-            body: JSON.stringify(clientData)
+            body: JSON.stringify(flightData)
         });
 
         const data = await res.json();
@@ -28,6 +28,7 @@ async function formSubmit(event) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("add_new_flight_form")
+    const form = document.getElementById("add_new_flights_form")
     form.addEventListener("submit", formSubmit);
 });
+

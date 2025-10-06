@@ -3,23 +3,15 @@ async function formSubmit(event) {
 
     const airlineData = {
         id: event.target["id"].value,
-        name: event.target["name"].value,
+        company_name: event.target["company_name"].value,
         type: event.target["type"].value,
-        phone_number: event.target["phone_number"].value,
-        address_line1: event.target["address_line1"].value,
-        address_line2: event.target["address_line2"].value,
-        address_line3: event.target["address_line3"].value,
-        city: event.target["city"].value,
-        state: event.target["state"].value,
-        zip_code: event.target["zip_code"].value,
-        country: event.target["country"].value
     }
     //send the request to update the client
     try {
         const res = await fetch(`http://127.0.0.1:5000/api/v1/airlines`, {
             method: "POST",
             headers: { "Content-type": "application/json" },
-            body: JSON.stringify(clientData)
+            body: JSON.stringify(airlineData)
         });
 
         const data = await res.json();
@@ -34,6 +26,7 @@ async function formSubmit(event) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("add_new_airline_form")
+    const form = document.getElementById("add_new_airlines_form")
     form.addEventListener("submit", formSubmit);
 });
+

@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     //get form from the page
-    const form = document.getElementById("update_client_form")
+    const form = document.getElementById("update_clients_form")
 
     // get record params from the url
     const params = new URLSearchParams(window.location.search);
@@ -35,7 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
-
+        
+        //updates inputs
         const updatedClient = {
             id,
             name: form.elements["name"].value,

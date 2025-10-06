@@ -2,8 +2,8 @@
 
 const headings = {
   clients: [{ label: "ID", key: "id" }, { label: "Type", key: "type" }, { label: "Name", key: "name" }, { label: "Address Line 1", key: "adress_line2" }, { label: "Address Line 2", key: "adress_line3" }, { label: "Address Line 3", key: "adress_line1" }, { label: "City", key: "city" }, { label: "State", key: "state" }, { label: "Country", key: "country" }, { label: "Phone", key: "phone_numnber" }, { label: "Actions" }],
-  flights: [{ label: "Client", key: "client_id" }, { label: "Airline", key: "airline_id" }, { label: "date", key: "date" }, { label: "Start City", key: "start_city" }, { label: "End City", key: "end_city" }, { label: "Acitions" }],
-  airlines: [{ label: "Company Name", key: "company_name" }, { label: "Actions", key: "actions" }]
+  flights: [{ label: "Client", key: "client_id" }, { label: "Airline", key: "airline_id" }, { label: "date", key: "date" }, { label: "Start City", key: "start_city" }, { label: "End City", key: "end_city" }, { label: "Actions" }],
+  airlines: [{ label: "ID", key: "id" }, { label: "Company Name", key: "company_name" }, { label: "Actions" }]
 }
 
 const endpoints = {
@@ -13,19 +13,36 @@ const endpoints = {
 
 }
 
-async function deleteRecord(id){
-  if(!confirm("Are you sure you want to delete this record?")){
+async function deleteRecord(type, id) {
+  if (!confirm("Are you sure you want to delete this record?")) {
     return;
-  } 
-   
-  const response = await fetch(`http://127.0.0.1:5000/api/v1/clients/${id}`, {method: "DELETE"});
+  }
 
-  if(response.ok){
-    alert("Record was deleted")
-  }else{
-    alert("Record wasn't deleted")
+  let url = "";
+
+  if (type === "flights") {
+    // flights
+    url = `http://127.0.0.1:5000/api/v1/flights/${id}`;
+  } else {
+    // clients and airlines 
+    url = `http://127.0.0.1:5000/api/v1/${type}/${id}`;
+  }
+
+  try {
+    const res = await fetch(url, { method: "DELETE" });
+    if (res.ok) {
+      alert("Record was deleted.");
+      location.reload(); // refresh table
+    } else {
+      alert("Record wasn't deleted.");
+      console.error("Server error:", await res.text());
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    alert("An unexpected error occurred.");
   }
 }
+
 
 //removes active class from all tab buttons and adds hidden class to their content
 function resetTabs(tabs, contents) {
@@ -57,20 +74,33 @@ async function fetchTableData(endpoint) {
 //builds the table for each tab record selected
 function table(data, type, tableHeadings) {
   const headerRow = tableHeadings.map(h => `<th>${h.label}</th>`).join("");
-  const bodyRows = data.data.map(item =>
-    `<tr>
-    ${tableHeadings.map(h => {
-      if (!h.key) {
-        return `<td><a href="update_${type}_form.html?id=${item.id}">Edit</a>
-        <button name="id" type="submit" value="${item.id}">Delete</button></td>`
-      }
-      else {
-        return `<td>${item[h.key] ?? ""}</td>`
+  const bodyRows = data.data.map(item => {
+    let tableActions = "";
 
-      }
-    }).join("")}
-    </tr>`
-  ).join("");
+    if (type === "flights") {
+      const flightIds = `${item.client_id}/${item.airline_id}/${item.date}`;
+      const flightParams = `client_id=${item.client_id}&airline_id=${item.airline_id}&date=${item.date}`;
+      tableActions = `
+    <td>
+      <a href="update_${type}_form.html?${flightParams}">Edit</a>
+      <button type="button" onclick="deleteRecord('${type}', '${flightIds}')">Delete</button>
+    </td>`;
+    } else {
+      tableActions = `
+    <td>
+      <a href="update_${type}_form.html?id=${item.id}">Edit</a>
+      <button type="button" onclick="deleteRecord('${type}', '${item.id}')">Delete</button>
+    </td>`;
+    }
+
+    const cells = tableHeadings.map(h => {
+      if (!h.key) { return tableActions }
+      else { return `<td>${item[h.key] ?? ""}</td>` }
+    }).join("");
+
+    return `<tr>${cells}</tr>`;
+  }).join("");
+
 
   return `
     <div class="table-wrapper">
@@ -100,21 +130,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const tabs = document.querySelectorAll(".tab");
   const contents = document.querySelectorAll(".content");
- 
+
   resetTabs(tabs, contents);
 
   //updates active tab
   tabs.forEach(tab => { tab.classList.add("active"); })
   tabs.forEach(tab => { tab.classList.add("active"); })
   content.removeAttribute("hidden");
-
-  function formSubmitHandler(event){
-    const id = event.submitter.value;
-    event.preventDefault();
-    deleteRecord(id)
-
-  }
-
-  content.addEventListener("submit", formSubmitHandler);
 
 })
