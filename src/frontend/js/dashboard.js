@@ -134,8 +134,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   resetTabs(tabs, contents);
 
   //updates active tab
-  tabs.forEach(tab => { tab.classList.add("active"); })
-  tabs.forEach(tab => { tab.classList.add("active"); })
-  content.removeAttribute("hidden");
-
+  tabs.forEach(tab => {
+    if (tab.dataset.tab == type) { tab.classList.add("active"); }
+  })
 })
