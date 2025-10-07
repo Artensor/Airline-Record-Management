@@ -51,8 +51,9 @@ document.addEventListener("DOMContentLoaded", () => {
             headers: { "Content-type": "application/json" },
             body: JSON.stringify(updatedFlight)
         })
-
+        window.location.href = "dashboard.html?tab=flights";
         alert("Submitted");
+        
     });
 
 });
