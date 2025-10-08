@@ -21,8 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 .then(res => res.json())
                 .then(flight => {
-                    form.elements["client_id"].value = flight.client_id || "";
-                    form.elements["airline_id"].value = flight.airline_id || "";
                     form.elements["date"].value = flight.date || "";
                     form.elements["start_city"].value = flight.start_city || "";
                     form.elements["end_city"].value = flight.end_city || "";
@@ -35,10 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
         
-        //updates inputs
         const updatedFlight = {
-            client_id: form.elements["client_id"].value,
-            airline_id: form.elements["airline_id"].value,
+            client_id,
+            airline_id,
             date: form.elements["date"].value,
             start_city: form.elements["start_city"].value,
             end_city: form.elements["end_city"].value,

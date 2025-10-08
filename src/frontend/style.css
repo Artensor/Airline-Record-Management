@@ -17,6 +17,12 @@ table {
     width: 80%;
 }
 
+.table-header {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 20px;
+}
+
 
 h1 {
     text-align: center;

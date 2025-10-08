@@ -32,7 +32,7 @@ async function deleteRecord(type, id) {
     const res = await fetch(url, { method: "DELETE" });
     if (res.ok) {
       alert("Record was deleted.");
-      location.reload(); // refresh table
+      location.reload();
     } else {
       alert("Record wasn't deleted.");
       console.error("Server error:", await res.text());
