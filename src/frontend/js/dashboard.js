@@ -18,18 +18,8 @@ async function deleteRecord(type, id) {
     return;
   }
 
-  let url = "";
-
-  if (type === "flights") {
-    // flights
-    url = `http://127.0.0.1:5000/api/v1/flights/${id}`;
-  } else {
-    // clients and airlines 
-    url = `http://127.0.0.1:5000/api/v1/${type}/${id}`;
-  }
-
   try {
-    const res = await fetch(url, { method: "DELETE" });
+    const res = await fetch(`http://127.0.0.1:5000/api/v1/${type}/${id}`, { method: "DELETE" });
     if (res.ok) {
       alert("Record was deleted.");
       location.reload();
@@ -44,7 +34,7 @@ async function deleteRecord(type, id) {
 }
 
 
-//removes active class from all tab buttons and adds hidden class to their content
+//removes active class from all tab links and adds hidden class to their content
 function resetTabs(tabs, contents) {
   tabs.forEach(tab => tab.classList.remove("active"));
   contents.forEach(content => content.setAttribute("hidden", ""));
@@ -70,10 +60,10 @@ async function fetchTableData(endpoint) {
 }
 
 
-
 //builds the table for each tab record selected
 function table(data, type, tableHeadings) {
   const headerRow = tableHeadings.map(h => `<th>${h.label}</th>`).join("");
+  const capitalizedType = type.charAt(0).toUpperCase() + type.slice(1);
   const bodyRows = data.data.map(item => {
     let tableActions = "";
 
@@ -104,14 +94,29 @@ function table(data, type, tableHeadings) {
 
   return `
     <div class="table-wrapper">
-    <div class="table-header">
-    
-      <a href="add_new_${type}_form.html" class="add-new-btn">+ Add New</a>
+
+    <div class="table-header"> 
+      <h3>${capitalizedType} Management</h3>
+    </div>
+
+    <table border="1">
+
+      <div class="search-wrapper">  
+        <label for="site-search">Search ${capitalizedType}:</label>
+        <input type="search" id="site-search" name="q" />
+        <button>Search</button>
       </div>
-      <table border="1">
+
+      <div class="add-button-wrapper">
+        <a href="add_new_${type}_form.html" class="add-new-btn">+ Add New</a>  
+      </div>
+
       <thead><tr>${headerRow}</tr></thead>
+
       <tbody>${bodyRows}</tbody>
-    </table>
+
+      </table>
+
     </div>
   `;
 }
