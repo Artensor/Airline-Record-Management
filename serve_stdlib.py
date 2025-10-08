@@ -2,9 +2,10 @@
 # serve_stdlib.py — HTTP JSON server
 # Exposes Clients, Airlines, Flights APIs (v1).
 # ------------------------------------------------------------
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 import json
+import os.path
 
 from src.conf.errors import InvalidInput, InvalidID, DuplicateID, NotFound, ImmutableID
 from src.record.clients import service as clients_svc
@@ -14,6 +15,7 @@ from src.record.flights import service as flights_svc
 HOST = "127.0.0.1"
 PORT = 5000
 API_PREFIX = "/api/v1"
+FRONTEND_PATH = os.path.join(os.path.dirname(__file__), "src", "frontend")
 
 def read_json(h):
     n = int(h.headers.get("Content-Length") or 0)
@@ -40,7 +42,10 @@ def map_error(e):
     if isinstance(e, InvalidInput): return 422
     return 500
 
-class Handler(BaseHTTPRequestHandler):
+class Handler(SimpleHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, directory=FRONTEND_PATH)
+
     def log_message(self, *args, **kwargs):  # keep console quiet
         pass
 
@@ -48,8 +53,14 @@ class Handler(BaseHTTPRequestHandler):
         p = urlparse(self.path)
         return [s for s in p.path.split("/") if s], parse_qs(p.query)
 
+    def do_HEAD(self):
+        if not self.path.startswith(API_PREFIX):
+            return super().do_HEAD()
+
     # ------- GET -------
     def do_GET(self):
+        if not self.path.startswith(API_PREFIX):
+            return super().do_GET()
         try:
             parts, qs = self._parts_qs()
             if parts == ["health"]:
