@@ -14,6 +14,7 @@ from src.record.flights import service as flights_svc
 
 HOST = "127.0.0.1"
 PORT = 5000
+LANDING_PAGE = "/src/frontend/dashboard.html"
 API_PREFIX = "/api/v1"
 FRONTEND_PATH = os.path.join(os.path.dirname(__file__), "src", "frontend")
 
@@ -60,6 +61,9 @@ class Handler(SimpleHTTPRequestHandler):
     # ------- GET -------
     def do_GET(self):
         if not self.path.startswith(API_PREFIX):
+            # Serve dashboard.html when requesting the site root
+            if self.path in ("", "/"):
+                self.path = "/" + os.path.basename(LANDING_PAGE)
             return super().do_GET()
         try:
             parts, qs = self._parts_qs()
@@ -185,7 +189,7 @@ class QuietServer(ThreadingHTTPServer):
     allow_reuse_address = True
 
 #Main entry point
-if __name__ == "__main__":
+if __name__ == "__main__":    
     server = QuietServer((HOST, PORT), Handler)
     print(f"Serving on http://{HOST}:{PORT}  (Ctrl+C to stop)")
     try:
