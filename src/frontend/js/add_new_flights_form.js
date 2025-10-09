@@ -2,8 +2,8 @@ async function formSubmit(event) {
     event.preventDefault();
 
     const flightData = {
-        client_id: event.target["client_id"].value,
-        airline_id: event.target["airline_id"].value,
+        client_id: Number(event.target["client_id"].value),
+        airline_id: Number(event.target["airline_id"].value),
         date: event.target["date"].value,
         start_city: event.target["start_city"].value,
         end_city: event.target["end_city"].value,

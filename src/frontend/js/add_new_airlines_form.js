@@ -2,7 +2,7 @@ async function formSubmit(event) {
     event.preventDefault();
 
     const airlineData = {
-        id: event.target["id"].value,
+        id: Number(event.target["id"].value),
         company_name: event.target["company_name"].value,
         type: event.target["type"].value,
     }
