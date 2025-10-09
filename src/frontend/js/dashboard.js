@@ -95,20 +95,21 @@ function table(data, type, tableHeadings) {
   return `
     <div class="table-wrapper">
 
-    <div class="table-header"> 
-      <h3>${capitalizedType} Management</h3>
-    </div>
-
     <table border="1">
+      <div class="table-header"> 
+        <h3>${capitalizedType} Management</h3>
+      </div>
 
-      <div class="search-wrapper">  
+      <div class="search-wrapper">
+
+        <div class="add-button-wrapper">
+          <a href="add_new_${type}_form.html" class="add-new-btn">+ Add New</a>  
+        </div>
+
         <label for="site-search">Search ${capitalizedType}:</label>
         <input type="search" id="site-search" name="q" />
         <button>Search</button>
-      </div>
 
-      <div class="add-button-wrapper">
-        <a href="add_new_${type}_form.html" class="add-new-btn">+ Add New</a>  
       </div>
 
       <thead><tr>${headerRow}</tr></thead>

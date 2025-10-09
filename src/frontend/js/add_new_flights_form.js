@@ -19,6 +19,7 @@ async function formSubmit(event) {
         const data = await res.json();
 
         console.log("Server response:", data);
+        window.location.href = "dashboard.html?tab=flights";
         alert("Submitted");
 
     } catch (err) {

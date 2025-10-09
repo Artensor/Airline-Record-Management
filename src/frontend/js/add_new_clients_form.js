@@ -25,6 +25,7 @@ async function formSubmit(event) {
         const data = await res.json();
 
         console.log("Server response:", data);
+        window.location.href = "dashboard.html?tab=clients";
         alert("Submitted");
 
     } catch (err) {

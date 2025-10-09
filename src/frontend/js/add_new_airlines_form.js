@@ -17,12 +17,12 @@ async function formSubmit(event) {
         const data = await res.json();
 
         console.log("Server response:", data);
+        window.location.href = "dashboard.html?tab=airlines";
         alert("Submitted");
 
     } catch (err) {
         console.log("Error:", err);
     }
-
 }
 
 document.addEventListener("DOMContentLoaded", () => {
