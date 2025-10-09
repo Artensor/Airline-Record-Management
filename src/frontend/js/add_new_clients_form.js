@@ -2,7 +2,7 @@ async function formSubmit(event) {
     event.preventDefault();
 
     const clientData = {
-        id: event.target["id"].value,
+        id: event.target["id"].value, 
         name: event.target["name"].value,
         type: event.target["type"].value,
         phone_number: event.target["phone_number"].value,

@@ -30,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
         
         //updates inputs
         const updatedAirline = {
-            id,
             company_name: form.elements["company_name"].value,
             type: form.elements["type"].value,
         };

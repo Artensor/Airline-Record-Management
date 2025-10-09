@@ -34,8 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
         
         const updatedFlight = {
-            client_id,
-            airline_id,
             date: form.elements["date"].value,
             start_city: form.elements["start_city"].value,
             end_city: form.elements["end_city"].value,

@@ -33,7 +33,6 @@ async function deleteRecord(type, id) {
   }
 }
 
-
 //removes active class from all tab links and adds hidden class to their content
 function resetTabs(tabs, contents) {
   tabs.forEach(tab => tab.classList.remove("active"));
@@ -65,6 +64,7 @@ function table(data, type, tableHeadings) {
   const headerRow = tableHeadings.map(h => `<th>${h.label}</th>`).join("");
   const capitalizedType = type.charAt(0).toUpperCase() + type.slice(1);
   const bodyRows = data.data.map(item => {
+
     let tableActions = "";
 
     if (type === "flights") {
@@ -95,22 +95,23 @@ function table(data, type, tableHeadings) {
   return `
     <div class="table-wrapper">
 
-    <table border="1">
+    <div class="search-wrapper">
       <div class="table-header"> 
         <h3>${capitalizedType} Management</h3>
       </div>
+      
+      <form>
+        <input type="text" name="q" placeholder="Search ${type}..."/>
+        <input type="hidden" name="tab" value="${type}">
+        <button type="submit">Search</button>
+      </form>
 
-      <div class="search-wrapper">
+      <div class="add-button-wrapper">
+        <a href="add_new_${type}_form.html" class="add-new-btn">+ Add New</a>  
+      </div> 
+    </div>
 
-        <div class="add-button-wrapper">
-          <a href="add_new_${type}_form.html" class="add-new-btn">+ Add New</a>  
-        </div>
-
-        <label for="site-search">Search ${capitalizedType}:</label>
-        <input type="search" id="site-search" name="q" />
-        <button>Search</button>
-
-      </div>
+    <table border="1">
 
       <thead><tr>${headerRow}</tr></thead>
 
@@ -125,11 +126,13 @@ function table(data, type, tableHeadings) {
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-  const content = document.getElementById("content")
-  const type = new URLSearchParams(window.location.search).get("tab") || "clients";
+  const content = document.getElementById("content");
+  const params = new URLSearchParams(window.location.search);
+  const type = params.get("tab") || "clients";
   const tableHeadings = headings[type];
 
-  const endpoint = endpoints[type];
+  const q = params.get("q") || "";
+  const endpoint = `${endpoints[type]}?${new URLSearchParams({ q })}`;
   const data = await fetchTableData(endpoint);
   const html = table(data, type, tableHeadings);
   content.innerHTML = html;

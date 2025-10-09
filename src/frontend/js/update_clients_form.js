@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
         
         //updates inputs
         const updatedClient = {
-            id,
             name: form.elements["name"].value,
             type: form.elements["type"].value,
             phone_number: form.elements["phone_number"].value,
