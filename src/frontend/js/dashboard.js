@@ -100,7 +100,7 @@ function table(data, type, tableHeadings) {
         <h3>${capitalizedType} Management</h3>
       </div>
       
-      <form>
+      <form class="search-form">
         <input type="text" name="q" placeholder="Search ${type}..."/>
         <input type="hidden" name="tab" value="${type}">
         <button type="submit">Search</button>

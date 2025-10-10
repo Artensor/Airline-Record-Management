@@ -1,4 +1,4 @@
-async function formSubmit(event) {
+export async function formSubmit(event) {
     event.preventDefault();
 
     const clientData = {
@@ -33,8 +33,3 @@ async function formSubmit(event) {
     }
 
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("add_new_clients_form")
-    form.addEventListener("submit", formSubmit);
-});

@@ -8,7 +8,7 @@ async function formSubmit(event) {
         start_city: event.target["start_city"].value,
         end_city: event.target["end_city"].value,
     }
-    //send the request to update the client
+    //send the request to create the client
     try {
         const res = await fetch(`http://127.0.0.1:5000/api/v1/flights`, {
             method: "POST",
