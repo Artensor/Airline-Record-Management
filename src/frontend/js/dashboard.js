@@ -94,12 +94,12 @@ function table(data, type, tableHeadings) {
 
   return `
     <div class="table-wrapper">
-
-    <div class="table-inner-wrapper">
       <div class="table-header"> 
         <h3>${capitalizedType} Management</h3>
       </div>
-      
+
+    <div class="table-inner-wrapper">
+    
       <div class="add-button-wrapper">
         <a href="add_new_${type}_form.html" class="add-new-btn">+ Add New</a>  
       </div> 
@@ -110,16 +110,17 @@ function table(data, type, tableHeadings) {
         <button type="submit">Search</button>
       </form>
 
+      <table border="1">
+
+        <thead><tr>${headerRow}</tr></thead>
+
+        <tbody>${bodyRows}</tbody>
+
+      </table>
+
   
     </div>
 
-    <table border="1">
-
-      <thead><tr>${headerRow}</tr></thead>
-
-      <tbody>${bodyRows}</tbody>
-
-      </table>
 
     </div>
   `;

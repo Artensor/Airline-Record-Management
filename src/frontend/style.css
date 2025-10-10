@@ -10,17 +10,37 @@ body {
     justify-content: center;
 }
 
-.table-inner-wrapper {
+.table-wrapper {
     background-color: #B4C8AC;
+    border-radius: 10px;
+    padding-bottom: 10%;
+    margin-left: 10%;
+    width: 80%;
+
+}
+
+.table-inner-wrapper {
+    background-color: #F3F7DA;
     border-radius: 15px;
+    padding: 3%;
     margin-left: auto;
     margin-right: auto;
-    width: 80%;
+    width: 70%;
 }
 
 .table-inner-wrapper input {
     margin-left: 20px;
     margin-bottom: 20px;
+    background-color: #D9D9D9;
+    border-radius: 5px;
+    width: 50%;
+    height: 4%;
+}
+
+.table-inner-wrapper button {
+    background-color: #D9D9D9;
+    border-radius: 5px;
+    height: 4%;
 }
 
 .add-button-wrapper {
@@ -29,24 +49,23 @@ body {
     border-radius: 15px;
     text-align: center;
     width: 15%;
+    height: 4%;
     font-size: 1rem;
     margin-right: 25px;
-    margin-bottom: 55px;
 }
 
 table {
-    background-color: #B4C8AC;
-    border-radius: 15px;
-    border: hidden;
-    margin-left: auto;
-    margin-right: auto;
+    background-color: #D9D9D9;
+    border-radius: 20px;
+    padding-left: 5%;
+    border: none;
     width: 80%;
 }
 
 .table-header {
     display: flex;
     justify-content: flex-start;
-    margin: 10px 20px;
+    margin: 40px 20px;
 }
 
 
