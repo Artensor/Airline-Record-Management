@@ -95,7 +95,7 @@ function table(data, type, tableHeadings) {
   return `
     <div class="table-wrapper">
 
-    <div class="search-wrapper">
+    <div class="table-inner-wrapper">
       <div class="table-header"> 
         <h3>${capitalizedType} Management</h3>
       </div>

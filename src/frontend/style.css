@@ -11,7 +11,7 @@ body {
     justify-content: center;
 }
 
-.search-wrapper {
+.table-inner-wrapper {
     background-color: #B4C8AC;
     border-radius: 15px;
     margin-left: auto;
@@ -26,8 +26,8 @@ body {
     text-align: center;
     width: 15%;
     font-size: 1rem;
-    margin-right: 15px;
-    margin-bottom: 15px;
+    margin-right: 25px;
+    margin-bottom: 55px;
 }
 
 table {
