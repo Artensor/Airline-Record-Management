@@ -100,15 +100,17 @@ function table(data, type, tableHeadings) {
         <h3>${capitalizedType} Management</h3>
       </div>
       
+      <div class="add-button-wrapper">
+        <a href="add_new_${type}_form.html" class="add-new-btn">+ Add New</a>  
+      </div> 
+      
       <form class="search-form">
         <input type="text" name="q" placeholder="Search ${type}..."/>
         <input type="hidden" name="tab" value="${type}">
         <button type="submit">Search</button>
       </form>
 
-      <div class="add-button-wrapper">
-        <a href="add_new_${type}_form.html" class="add-new-btn">+ Add New</a>  
-      </div> 
+  
     </div>
 
     <table border="1">
