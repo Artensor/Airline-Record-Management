@@ -1,108 +1,172 @@
-# Airline Record Management (Backend, stdlib-only)
+# Airline Record Management System
 
-Solution to manage **Clients**, **Airlines**, and **Flights**.
+![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)
 
-**BackEnd**
+---
 
-✅ **No third-party libraries** — only Python’s standard library.
+## Table of Contents
 
-- **Storage:** JSON files (one per entity) in a local data folder  
-- **Architecture:** API (stdlib HTTP server) → Service (business rules) → Repo (JSON I/O)  
-- **APIs:** CRUD for Clients/Airlines/Flights, plus search/list 
-- **Rules:**  
-  - **IDs are user-provided** must be **unique**  
-  - **Delete guard:** cannot delete a Client or Airline if it has **today/future** flights  
-  - **Flights list:** shows **today & future** only, sorted by date (past flights are hidden)
+1. [Overview](#overview)
+2. [Features](#features)
+3. [Requirements](#requirements)
+4. [Quick Start](#quick-start)
+5. [Project Structure](#project-structure)
+6. [Data Models](#data-models)
+7. [API Reference](#api-reference-v1)
+8. [Status Codes](#status-codes)
+9. [Testing](#testing)
+10. [Frontend Details](#frontend-details)
+
+---
+
+## Overview
+
+Solution to manage **Clients**, **Airlines**, and **Flights** with both a **Backend API (Python stdlib)** and a **Frontend GUI (HTML/JS)**.
+
+---
+
+## Features
+
+**Backend (API)**
+ - ✅ Pure Python 3 (stdlib only — no third-party libraries)
+ - ✅ JSON file storage (one per entity, auto-save/load)
+ - ✅ CRUD for Clients, Airlines, Flights
+ - ✅ Business rules enforced:
+      - IDs are user-provided and must be unique
+      - Cannot delete Client/Airline if it has today/future flights
+      - Flights list shows only today & future, sorted by date
+
+**Frontend (GUI)**
+- ✅ Implemented with vanilla HTML/CSS/JS (no frameworks)
+- ✅ Separate forms for Create/Update/Delete/Search per entity
+- ✅ Integrated with backend APIs via fetch calls
+- ✅ Design guided by Figma prototype: https://www.figma.com/design/bY4HncvPWx1Rem6Bu2JHI9/Record-Management-System?node-id=65-201 
 
 ---
 
 ## Requirements
 
-- **Python 3.10+**
-- No `pip install` needed. `requirements.txt` is intentionally empty.
+  - **Python 3.10+**
+  - No `pip install` needed (stdlib only).
+  - Browser (tested in Chrome/Edge/Safari).
 
-> Always run commands from the **repo root** (the folder containing `serve_stdlib.py` and `src/`).
+- `requirements.txt` is intentionally empty.
 
 ---
 
 ## Quick Start
 
-### Run from the console
+1. Run the Backend API
 
-**macOS / Linux**
+Run from repo root (the folder with `serve_stdlib.py`):
+
+- **macOS/Linux**
+
 ```bash
-# optional: choose where JSON data is stored
 export DATA_DIR=./data-stdlib
-
-# start the server
 python serve_stdlib.py
+```
 
-Windows (PowerShell)
 
+- **Windows (PowerShell)**
+
+```powershell
 $env:DATA_DIR = ".\data-stdlib"
 python serve_stdlib.py
-
+```
 You should see:
+
+```text
 Serving on http://127.0.0.1:5000  (Ctrl+C to stop)
-Stop with Ctrl+C. You’ll get a clean shutdown.
+```
 
-Run from VS Code (Run button)
-1. Open the repo root in VS Code.
-2. Command Palette → Python: Select Interpreter → pick your Python 3.x.
-3. Add .vscode/launch.json:
+Stop with Ctrl+C.
 
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Run API (stdlib)",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}/serve_stdlib.py",
-      "env": { "DATA_DIR": "${workspaceFolder}/data-stdlib" },
-      "console": "integratedTerminal"
-    },
-    {
-      "name": "Run tests (unittest)",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}/run_tests.py",
-      "console": "integratedTerminal"
-    }
-  ]
-}
+- **Run from VS Code**
 
-Use the Run and Debug panel to start Run API (stdlib) or Run tests (unittest).
+  1. Open repo root in VS Code
+  2. Select Python 3.x interpreter
+  3. Add .vscode/launch.json:
+  ```json
+      {
+        "version": "0.2.0",
+        "configurations": [
+          {
+            "name": "Run API (stdlib)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/serve_stdlib.py",
+            "env": { "DATA_DIR": "${workspaceFolder}/data-stdlib" },
+            "console": "integratedTerminal"
+          },
+          {
+            "name": "Run tests (unittest)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/run_tests.py",
+            "console": "integratedTerminal"
+          }
+        ]
+      }
+---
 
-Project Structure
+2. Run the Frontend (GUI)
+
+  With the server running, open the GUI in a browser:
+
+  👉 http://127.0.0.1:5000/dashboard.html
+
+  The dashboard allows navigation across Clients, Airlines, and Flights, with options to add, update, delete, and search records.
+
+---
+
+## Project Structure
+
+```text
 serve_stdlib.py             # stdlib HTTP server (entrypoint)
-run_tests.py                # stdlib unittest runner (optional)
+run_tests.py                # stdlib unittest runner
 requirements.txt            # empty (no external deps)
 
 src/
-  conf/
-    errors.py               # small custom exceptions
-    settings.py             # DATA_DIR, AUTOSAVE
-    enums.py                # allowed types (Clients / Airlines)
-  record/
-    common/
-      storage.py            # JSON load / save
-      validation.py         # small validators + date helpers
+  conf/                     # configuration (enums, errors, settings)
+  record/                   # backend services and repos
+    clients/                # clients repo + service
+    airlines/               # airlines repo + service
+    flights/                # flights repo + service
+    common/                 # JSON load/save + validation helpers
+  frontend/                 # GUI (HTML/CSS/JS)
+    dashboard.html           # main dashboard
+    add_new_clients_form.html
+    add_new_airlines_form.html
+    add_new_flights_form.html
+    update_clients_form.html
+    update_airlines_form.html
+    update_flights_form.html
+    js/                     # all JS handlers (fetch + events)
+      dashboard.js
+      add_new_clients_form.js
+      add_new_airlines_form.js
+      add_new_flights_form.js
+      update_clients_form.js
+      update_airlines_form.js
+      update_flights_form.js
+    style.css                # frontend stylesheet
+    tests/                   # frontend test harness
+      tests.html
+      tests.js
+  search/                   # search helpers
+tests_unittest/             # backend unit tests
+data-stdlib/                # JSON storage (auto-created if missing)
+```
 
-    clients/
-      repo.py               # JSON CRUD (no business logic)
-      service.py            # validation + rules for Clients
-    airlines/
-      repo.py               # JSON CRUD
-      service.py            # validation + rules for Airlines
-    flights/
-      repo.py               # JSON CRUD (composite identity)
-      service.py            # validation + rules for Flights
+---
 
-tests_unittest/             # stdlib tests (if included)
+## Data Models
 
-Data Model
-{
+- **Client**
+
+```json
+ {
   "id": 101,
   "type": "Business",          // ENUM (case-insensitive input; stored canonical)
   "name": "Alice",
@@ -115,138 +179,238 @@ Data Model
   "country": "USA",
   "phone_number": "+1-555-1111"
 }
+
+```
 Allowed type: Business, Corporate, Leisure, VIP (case-insensitive on input).
 
-Airline
-{
+- **Airline**
+
+```json
+ {
   "id": 301,
   "type": "National",          // ENUM (case-insensitive input; stored canonical)
   "company_name": "Air Demo"
 }
+```
 Allowed type: Charter, Low Cost, National, Regional (case-insensitive on input).
 
-Flight
-{
+- **Flight**
+
+```json
+ {
   "client_id": 101,
   "airline_id": 301,
   "date": "2999-01-01",        // ISO 8601: "YYYY-MM-DD" or "YYYY-MM-DDTHH:MM[:SS]" (optional 'Z')
   "start_city": "NYC",
   "end_city": "SFO"
 }
+```
+
 Identity is (client_id, airline_id, date).
 Flights are only listed if date >= today.
 
-API Reference (v1)
+**Date Format Tips**
+
+Accepted formats:
+  - YYYY-MM-DD
+  - YYYY-MM-DDTHH:MM or YYYY-MM-DDTHH:MM:SS
+  - Optional Z suffix (treated as UTC for parsing)
+
+---
+
+## API Reference (v1)
 
 Base URL: http://127.0.0.1:5000
 
-Health
+**Health**
+
+```bash
 GET /health → {"status":"ok"}
+```
 
-Clients
-- POST /api/v1/clients — create (user supplies unique id)
-- GET /api/v1/clients/{id} — read one
-- PUT /api/v1/clients/{id} — update (cannot change id)
-- DELETE /api/v1/clients/{id} — delete
-- GET /api/v1/clients?q=&sort= — search/list (no pagination) 
-  - q matches name or city (case-insensitive)
+**Clients**
 
-Examples
+```bash
+POST /api/v1/clients — create
+
+GET /api/v1/clients/{id} — read
+
+PUT /api/v1/clients/{id} — update
+
+DELETE /api/v1/clients/{id} — delete
+
+GET /api/v1/clients?q=&sort= — search/list
+```
+
+**Example**
+```bash
 # Create
 curl -i -X POST http://127.0.0.1:5000/api/v1/clients \
-  -H "Content-Type: application/json" \
-  -d '{"id":101,"type":"business","name":"Alice","address_line1":"123 Main","city":"Springfield","state":"IL","zip_code":"62701","country":"USA","phone_number":"+1-555-1111"}'
+-H "Content-Type: application/json" \
+-d '{"id":101,"type":"business","name":"Alice","address_line1":"123 Main","city":"Springfield","state":"IL","zip_code":"62701","country":"USA","phone_number":"+1-555-1111"}'
 
 # Get
 curl -s http://127.0.0.1:5000/api/v1/clients/101
 
 # Update
 curl -i -X PUT http://127.0.0.1:5000/api/v1/clients/101 \
-  -H "Content-Type: application/json" \
-  -d '{"city":"New City"}'
+-H "Content-Type: application/json" \
+-d '{"city":"New City"}'
 
-# Search (no pagination)
+# Search
 curl -s "http://127.0.0.1:5000/api/v1/clients?q=alice&sort=id"
 
-# Delete (422 if client has future/today flights)
+# Delete
 curl -i -X DELETE http://127.0.0.1:5000/api/v1/clients/101
+```
 
-Airlines
 
-- POST /api/v1/airlines — create
-- GET /api/v1/airlines/{id} — read one
-- PUT /api/v1/airlines/{id} — update (cannot change id)
-- DELETE /api/v1/airlines/{id} — delete
-- GET /api/v1/airlines?q=&sort= — search/list (no pagination) 
-  - q matches company_name (case-insensitive)
+**Airlines**
+```bash
 
-Examples
+POST /api/v1/airlines — create
+
+GET /api/v1/airlines/{id} — read
+
+PUT /api/v1/airlines/{id} — update
+
+DELETE /api/v1/airlines/{id} — delete
+
+GET /api/v1/airlines?q=&sort= — search/list
+```
+
+**Examples** 
+```bash
+# Create
 curl -i -X POST http://127.0.0.1:5000/api/v1/airlines \
   -H "Content-Type: application/json" \
   -d '{"id":301,"type":"national","company_name":"Air Demo"}'
 
+# Get
 curl -s http://127.0.0.1:5000/api/v1/airlines/301
 
+# Update
 curl -i -X PUT http://127.0.0.1:5000/api/v1/airlines/301 \
   -H "Content-Type: application/json" \
   -d '{"company_name":"Air Demo Updated"}'
 
+# Search
 curl -s "http://127.0.0.1:5000/api/v1/airlines?q=air&sort=company_name"
 
+# Delete
 curl -i -X DELETE http://127.0.0.1:5000/api/v1/airlines/301
+```
 
-Flights
 
-- POST /api/v1/flights — create (composite identity). Client + Airline must already exist.
-- GET /api/v1/flights?client_id=&airline_id=&q= — list today & future only, sorted by date asc 
-  - client_id (optional)
-  - airline_id (optional)
-  - q matches start_city or end_city (case-insensitive)
+**Flights**
 
-- GET /api/v1/flights/{client_id}/{airline_id}/{date} — read one
-- PUT /api/v1/flights/{client_id}/{airline_id}/{date} — update (cannot change identity)
-- DELETE /api/v1/flights/{client_id}/{airline_id}/{date} — delete
+```bash
+POST /api/v1/flights — create
 
-Examples
-# Create a *future* flight
+GET /api/v1/flights?... — list today+future
+
+GET /api/v1/flights/{client_id}/{airline_id}/{date} — read
+
+PUT /api/v1/flights/{client_id}/{airline_id}/{date} — update
+
+DELETE /api/v1/flights/{client_id}/{airline_id}/{date} — delete
+```
+
+**Examples** 
+```bash
+# Create future flight
 curl -i -X POST http://127.0.0.1:5000/api/v1/flights \
-  -H "Content-Type: application/json" \
-  -d '{"client_id":101,"airline_id":301,"date":"2999-01-01","start_city":"NYC","end_city":"SFO"}'
+-H "Content-Type: application/json" \
+-d '{"client_id":101,"airline_id":301,"date":"2999-01-01","start_city":"NYC","end_city":"SFO"}'
 
-# List flights (today+future)
+# List
 curl -s http://127.0.0.1:5000/api/v1/flights
 
-# Get one by composite key
+# Get one
 curl -s http://127.0.0.1:5000/api/v1/flights/101/301/2999-01-01
 
 # Update
 curl -i -X PUT http://127.0.0.1:5000/api/v1/flights/101/301/2999-01-01 \
-  -H "Content-Type: application/json" \
-  -d '{"start_city":"NYC-Updated"}'
+-H "Content-Type: application/json" \
+-d '{"start_city":"NYC-Updated"}'
 
 # Delete
 curl -i -X DELETE http://127.0.0.1:5000/api/v1/flights/101/301/2999-01-01
 ```
-## Details
-Status Codes
+
+
+---
+
+## Status Codes
+
 - 201 Created — POST success
-- 200 OK — GET/PUT success (returns JSON)
+
+- 200 OK — GET/PUT success
+
 - 204 No Content — DELETE success
-- 400 Bad Request — bad ID format, attempted identity change
-- 404 Not Found — resource not found
-- 409 Conflict — duplicate ID on create
-- 422 Unprocessable Entity — validation errors (missing fields, bad enum, FK missing, delete guard, etc.)
 
-Date Format Tips
-Accepted:
-"YYYY-MM-DD"
-"YYYY-MM-DDTHH:MM" or "YYYY-MM-DDTHH:MM:SS"
-Optional 'Z' suffix (treated as UTC for parsing)
+- 400 Bad Request — invalid ID / identity change
 
-Tests (stdlib unittest)
-Optional in case you want to test:
-export DATA_DIR=./data-test   # PowerShell: $env:DATA_DIR = ".\data-test"
+- 404 Not Found — resource missing
+
+-  409 Conflict — duplicate ID
+
+- 422 Unprocessable Entity — validation errors (missing fields, bad enum, delete guard, etc.)
+
+---
+
+## Testing
+
+- **Backend unit tests**
+```bash
+export DATA_DIR=./data-test 
 python run_tests.py
+```
+```powershell
+$env:DATA_DIR = ".\data-test"
+python run_tests.py
+```
 
-The runner discovers tests under tests_unittest/.
+The runner discovers tests under `tests_unittest/`.
+
 Tests use temp folders and reset repo singletons, so they won’t affect your live data.
+
+
+- **Frontend testing**
+
+Manual UAT: open `dashboard.html` → run Create/Update/Delete/Search flows.
+Lightweight test harness under frontend/tests/ (`tests.html`, `tests.js`).
+
+Ensure IDs entered are integers, as backend requires numeric IDs.
+
+---
+
+## Frontend details
+
+The GUI is built with vanilla HTML, CSS, and JavaScript and connects to the backend API using fetch.
+
+**Structure**
+
+- `dashboard.html`→ entry point (tabs for Clients, Airlines, Flights)
+
+**Entity Forms**
+
+Add forms:
+- `add_new_clients_form.html` → `js/add_new_clients_form.js`
+- `add_new_airlines_form.html` → `js/add_new_airlines_form.js`
+- `add_new_flights_form.html` → `js/add_new_flights_form.js`
+
+Update forms:
+- `update_clients_form.html` → `js/update_clients_form.js`
+- `update_airlines_form.html` → `js/update_airlines_form.js`
+- `update_flights_form.html` → `js/update_flights_form.js`
+
+- Each form maps fields to JSON payloads and calls the relevant backend API endpoint.
+
+**Style**
+
+- Shared `style.css` ensures consistent layout and simple responsive design.
+
+**Design**
+
+- Figma prototype: https://www.figma.com/design/bY4HncvPWx1Rem6Bu2JHI9/Record-Management-System?node-id=65-201 
