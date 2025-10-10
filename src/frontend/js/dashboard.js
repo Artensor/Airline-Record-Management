@@ -33,6 +33,8 @@ async function deleteRecord(type, id) {
   }
 }
 
+window.deleteRecord = deleteRecord;
+
 //removes active class from all tab links and adds hidden class to their content
 function resetTabs(tabs, contents) {
   tabs.forEach(tab => tab.classList.remove("active"));
