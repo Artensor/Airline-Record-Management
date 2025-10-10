@@ -12,7 +12,7 @@
         <label for="client_id"> Client ID </label><br>
         <input type="number" name="client_id" min="0" /><br>
         <label for="airline_id"> Airline ID </label><br>
-        <input type="number" name="airline_id" min="0"/><br>
+        <input type="number" name="airline_id" min="0" /><br>
         <label for="date"> Date </label><br>
         <input type="date" name="date" /><br>
         <label for="start_city"> Start City </label><br>
@@ -23,7 +23,15 @@
         <input type="submit">
     </form>
     <!-- Load JavaScript file -->
-    <script type="module" src="js/add_new_flights_form.js"></script>
+    <script type="module">
+        import { formSubmit } from "./js/add_new_flights_form.js";
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("add_new_flights_form")
+            form.addEventListener("submit", formSubmit);
+        });
+
+
+    </script>
 
 </body>
 

@@ -34,14 +34,14 @@
 
         <input type="submit">
     </form>
+
     <!-- Load JavaScript file -->
     <script type="module">
-        import { formSubmit } from "js/add_new_clients_form.js";
+        import { formSubmit } from "./js/add_new_clients_form.js";
         document.addEventListener("DOMContentLoaded", () => {
             const form = document.getElementById("add_new_clients_form")
             form.addEventListener("submit", formSubmit);
         });
-
     </script>
 
 </body>

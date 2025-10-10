@@ -1,22 +1,27 @@
 <html>
 
-<head> 
-    <title>Airline Record Management System</title>
-    <link rel="stylesheet" href="style.css">
+<head>
+  <title>Airline Record Management System</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <h1>Airline Record Management System</h1>
-<div class="tabs">
-  <a class="tab active" data-tab="clients" data-type="clients" href="?tab=clients">Clients</a>
-  <a class="tab" data-tab="flights" data-type="flights" href="?tab=flights">Flights</a>
-  <a class="tab" data-tab="airlines" data-type="airlines" href="?tab=airlines">Airlines</a>
-</div>
+  <div class="tabs">
+    <a class="tab active" data-tab="clients" data-type="clients" href="?tab=clients">Clients</a>
+    <a class="tab" data-tab="flights" data-type="flights" href="?tab=flights">Flights</a>
+    <a class="tab" data-tab="airlines" data-type="airlines" href="?tab=airlines">Airlines</a>
+  </div>
 
-<form id="content"></form>
+  <form id="content"></form>
 
- 
+
   <!-- Load JavaScript file -->
-  <script src="js/dashboard.js"></script>
-    
+  <script type="module">
+    import { dashboardEventListener } from "./js/dashboard.js";
+    document.addEventListener("DOMContentLoaded", dashboardEventListener);
+  </script>
+
 </body>
+
 </html>

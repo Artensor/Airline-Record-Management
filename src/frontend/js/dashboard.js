@@ -127,26 +127,28 @@ function table(data, type, tableHeadings) {
 }
 
 
-document.addEventListener("DOMContentLoaded", async () => {
+export async function dashboardEventListener() {
+  
 
-  const content = document.getElementById("content");
-  const params = new URLSearchParams(window.location.search);
-  const type = params.get("tab") || "clients";
-  const tableHeadings = headings[type];
+    const content = document.getElementById("content");
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get("tab") || "clients";
+    const tableHeadings = headings[type];
 
-  const q = params.get("q") || "";
-  const endpoint = `${endpoints[type]}?${new URLSearchParams({ q })}`;
-  const data = await fetchTableData(endpoint);
-  const html = table(data, type, tableHeadings);
-  content.innerHTML = html;
+    const q = params.get("q") || "";
+    const endpoint = `${endpoints[type]}?${new URLSearchParams({ q })}`;
+    const data = await fetchTableData(endpoint);
+    const html = table(data, type, tableHeadings);
+    content.innerHTML = html;
 
-  const tabs = document.querySelectorAll(".tab");
-  const contents = document.querySelectorAll(".content");
+    const tabs = document.querySelectorAll(".tab");
+    const contents = document.querySelectorAll(".content");
 
-  resetTabs(tabs, contents);
+    resetTabs(tabs, contents);
 
-  //updates active tab
-  tabs.forEach(tab => {
-    if (tab.dataset.tab == type) { tab.classList.add("active"); }
-  })
-})
+    //updates active tab
+    tabs.forEach(tab => {
+      if (tab.dataset.tab == type) { tab.classList.add("active"); }
+    })
+
+}

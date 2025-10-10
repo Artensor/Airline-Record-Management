@@ -25,8 +25,3 @@ async function formSubmit(event) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("add_new_airlines_form")
-    form.addEventListener("submit", formSubmit);
-});
-
