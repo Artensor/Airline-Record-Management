@@ -1,4 +1,4 @@
-async function formSubmit(event) {
+export async function formSubmit(event) {
     event.preventDefault();
 
     const flightData = {
