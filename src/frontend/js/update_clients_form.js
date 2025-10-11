@@ -1,6 +1,6 @@
 
 //get all data and fill the update form
-export async function getRecordData(id, form) {
+export async function getClientData(id, form) {
 
     if (id) {
 
@@ -23,7 +23,7 @@ export async function getRecordData(id, form) {
 
 }
 
-export const formSubmit = (id) => async (event) => {
+export const formUpdateClientSubmit = (id) => async (event) => {
     event.preventDefault();
     const form = event.target;
 
@@ -48,6 +48,5 @@ export const formSubmit = (id) => async (event) => {
         headers: { "Content-type": "application/json" },
         body: JSON.stringify(updatedClient)
     })
-    window.location.href = "dashboard.html?tab=clients";
-    alert("Submitted");
+
 }

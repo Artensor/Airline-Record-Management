@@ -35,7 +35,7 @@
     </form>
     <!-- Load JavaScript file -->
     <script type="module">
-        import { getRecordData, formSubmit } from "./js/update_clients_form.js";
+        import { getClientData, formUpdateClientSubmit } from "./js/update_clients_form.js";
         document.addEventListener("DOMContentLoaded", () => {
 
             //get form from the page
@@ -44,8 +44,13 @@
             // get record params from the url
             const params = new URLSearchParams(window.location.search);
             const id = params.get("id");
-            getRecordData(id, form);
-            form.addEventListener("submit", formSubmit(id));
+            getClientData(id, form);
+            form.addEventListener("submit", async (event) => {
+                await formUpdateClientSubmit(event)
+                window.location.href = "dashboard.html?tab=clients";
+                alert("Submitted");
+            });
+
         });
     </script>
 

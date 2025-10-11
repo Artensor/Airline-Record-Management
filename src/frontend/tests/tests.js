@@ -1,18 +1,54 @@
-import { formSubmit } from "../js/add_new_clients_form.js";
+import { formClientSubmit } from "../js/add_new_clients_form.js";
+import { formUpdateClientSubmit, getClientData } from "../js/update_clients_form.js";
+
 
 let fetch_args;
+
 window.fetch = async (url, options) => {
-    fetch_args = [url, options];
-    console.log("Mock fetch called with:", url, options);
+    if (url.includes("/clients/6") && !options) {
+        console.log("Mock fetch GET client data:", url);
+        return {
+            ok: true,
+            json: async () => ({
+                id: 6,
+                name: "Jane Doe",
+                type: "Business",
+                phone_number: "+15555555555",
+                address_line1: "123 Main St",
+                address_line2: "",
+                address_line3: "",
+                city: "New York",
+                state: "NY",
+                zip_code: "10001",
+                country: "USA",
+            }),
+        };
+    }
 
-    return {
-        ok: true,
-        status: 200,
-        json: async () => ({ message: "Client added successfully" }),
-    };
-}
+    if (url.endsWith("/clients") && options.method === "POST") {
+        fetch_args = [url, options];
+        console.log("Mock fetch POST:", url, options);
+        return {
+            ok: true,
+            status: 200,
+            json: async () => ({ message: "Client added successfully" }),
+        };
+    }
 
-const mockForm = {
+    if (url.includes("/clients/6") && options.method === "PUT") {
+        fetch_args = [url, options];
+        console.log("Mock fetch PUT:", url, options);
+        return {
+            ok: true,
+            status: 200,
+            json: async () => ({ message: "Client updated successfully" }),
+        };
+    }
+
+    throw new Error(`Unhandled fetch request: ${url}`);
+};
+
+const mockFormClient = {
     id: { value: "5" },
     name: { value: "Jane Doe" },
     type: { value: "Business" },
@@ -28,54 +64,97 @@ const mockForm = {
 
 
 async function testAddNewClients(log) {
-  const mockEvent = {
-    preventDefault: () => console.log("preventDefault called"),
-    target: mockForm,
-  };
+    const mockEvent = {
+        preventDefault: () => console.log("preventDefault called"),
+        target: mockFormClient,
+    };
 
-  await formSubmit(mockEvent);
+    await formClientSubmit(mockEvent);
 
-  const [url, options] = fetch_args || [];
+    const [url, options] = fetch_args || [];
 
-  console.assert(url === "http://127.0.0.1:5000/api/v1/clients", "Wrong URL used in fetch");
-  console.assert(options.method === "POST", "Method should be POST");
-  console.assert(options.headers["Content-type"] === "application/json", "Missing JSON header");
-  console.assert(JSON.parse(options.body).name === "Jane Doe", "Client name not sent correctly");
+    console.assert(url === "http://127.0.0.1:5000/api/v1/clients", "Wrong URL used in fetch");
+    console.assert(options.method === "POST", "Method should be POST");
+    console.assert(options.headers["Content-type"] === "application/json", "Missing JSON header");
+    console.assert(JSON.parse(options.body).name === "Jane Doe", "Client name not sent correctly");
 
-  log("testAddNewClients passed");
-  alert("testAddNewClients passed");
+    log("testAddNewClients passed");
+    alert("testAddNewClients passed");
 }
 
 
-// function testUpdateClients() {
+async function testUpdateClients(log) {
+    const existingClientData = {
+        id: 6,
+        name: "Jane Doe",
+        type: "Business",
+        phone_number: "+15555555555",
+        address_line1: "123 Main St",
+        address_line2: "",
+        address_line3: "",
+        city: "New York",
+        state: "NY",
+        zip_code: "10001",
+        country: "USA",
+    };
 
-//     if (true) {
+    const mockForm = {
+        elements: {
+            name: { value: "" },
+            type: { value: "" },
+            phone_number: { value: "" },
+            address_line1: { value: "" },
+            address_line2: { value: "" },
+            address_line3: { value: "" },
+            city: { value: "" },
+            state: { value: "" },
+            zip_code: { value: "" },
+            country: { value: "" },
+        }
+    };
 
-//     }
+    await getClientData(6, mockForm);
 
-
-//     console.assert();
-// }
-
-
-// function testAddNewAirlines() {
-//     if (true) {
-
-//     }
-
-
-//     console.assert();
-// }
-
-// function testUpdateAirlines() {
-
-//     if (true) {
-
-//     }
+    mockForm.elements["name"].value = "Karina Rodriguez";
 
 
-//     console.assert();
-// }
+    const mockEvent = {
+        preventDefault: () => console.log("preventDefault called"),
+        target: mockForm,
+    };
+
+
+    await formUpdateClientSubmit("6")(mockEvent);
+
+
+    const [url, options] = fetch_args || [];
+
+    console.assert(url === "http://127.0.0.1:5000/api/v1/clients/6", "Wrong URL for update");
+    console.assert(options.method === "PUT", "Method should be PUT");
+    console.assert(JSON.parse(options.body).name === "Karina Rodriguez", "Updated name not sent correctly");
+
+    log("testUpdateClients passed");
+    alert("testUpdateClients passed");
+}
+
+function testAddNewAirlines() {
+    if (true) {
+
+    }
+
+
+    // console.assert();
+}
+
+function testUpdateAirlines() {
+
+    if (true) {
+
+    }
+
+
+    // console.assert();
+}
 
 
 // function testAddNewFlights() {
@@ -116,7 +195,11 @@ export async function runAllTests(results) {
         results.appendChild(child);
     }
 
-    testAddNewClients(log);
+    await testAddNewClients(log);
+
+    fetch_args = null; // reset between tests
+
+    await testUpdateClients(log);
 }
 
 
