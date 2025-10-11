@@ -8,7 +8,12 @@
 
 <body>
     <h1>Running JS Tests</h1>
-    <script type="module" src="./tests.js"></script>
+
+    <div id="results">Results:</div>
+    <script type="module">
+        import {runAllTests} from "./tests.js";
+        runAllTests(document.getElementById("results"));
+    </script>
 </body>
 
 </html>

@@ -1,6 +1,8 @@
 import { formSubmit } from "../js/add_new_clients_form.js";
 
+let fetch_args;
 window.fetch = async (url, options) => {
+    fetch_args = [url, options];
     console.log("Mock fetch called with:", url, options);
 
     return {
@@ -24,28 +26,26 @@ const mockForm = {
     country: { value: "USA" },
 };
 
-async function testAddNewClients() {
-    const mockEvent = {
-        preventDefault: () => console.log("preventDefault called"),
-        target: mockForm,
-    };
 
-    await formSubmit(mockEvent);
+async function testAddNewClients(log) {
+  const mockEvent = {
+    preventDefault: () => console.log("preventDefault called"),
+    target: mockForm,
+  };
 
-    console.assert(
-        output.some(line => line.includes("Mock fetch called with")),
-        "fetch was not called"
-    );
-    console.assert(
-        output.some(line => line.includes("Submitting client")),
-        "formSubmit did not log submission"
-    );
+  await formSubmit(mockEvent);
 
-    alert("testAddNewClients passed");
+  const [url, options] = fetch_args || [];
 
+  console.assert(url === "http://127.0.0.1:5000/api/v1/clients", "Wrong URL used in fetch");
+  console.assert(options.method === "POST", "Method should be POST");
+  console.assert(options.headers["Content-type"] === "application/json", "Missing JSON header");
+  console.assert(JSON.parse(options.body).name === "Jane Doe", "Client name not sent correctly");
 
-    console.log = originalLog;
+  log("testAddNewClients passed");
+  alert("testAddNewClients passed");
 }
+
 
 // function testUpdateClients() {
 
@@ -109,6 +109,14 @@ async function testAddNewClients() {
 
 // }
 
+export async function runAllTests(results) {
+    const log = (item) => {
+        const child = document.createElement("p");
+        child.innerText = item;
+        results.appendChild(child);
+    }
 
-// Run the test automatically
-testAddNewClients();
+    testAddNewClients(log);
+}
+
+
