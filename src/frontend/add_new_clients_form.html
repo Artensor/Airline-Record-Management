@@ -40,7 +40,11 @@
         import { formSubmit } from "./js/add_new_clients_form.js";
         document.addEventListener("DOMContentLoaded", () => {
             const form = document.getElementById("add_new_clients_form")
-            form.addEventListener("submit", formSubmit);
+            form.addEventListener("submit", async (event) => {
+                await formSubmit(event);
+                window.location.href = "dashboard.html?tab=clients";
+                alert("Submitted");
+            });
         });
     </script>
 
