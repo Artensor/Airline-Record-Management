@@ -18,7 +18,20 @@
         <input type="submit">
     </form>
     <!-- Load JavaScript file -->
-    <script src="js/update_airlines_form.js"></script>
+    <script type="module">
+        import { getRecordData, formSubmit } from "./js/update_airlines_form.js";
+        document.addEventListener("DOMContentLoaded", () => {
+
+            //get form from the page
+            const form = document.getElementById("update_airlines_form")
+
+            // get record params from the url
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get("id");
+            getRecordData(id, form);
+            form.addEventListener("submit", formSubmit(id));
+        });
+    </script>
 
 </body>
 

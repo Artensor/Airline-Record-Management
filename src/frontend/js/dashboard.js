@@ -2,7 +2,7 @@
 
 const headings = {
   clients: [{ label: "ID", key: "id" }, { label: "Type", key: "type" }, { label: "Name", key: "name" }, { label: "Address Line 1", key: "address_line1" }, { label: "Address Line 2", key: "address_line2" }, { label: "Address Line 3", key: "address_line3" }, { label: "City", key: "city" }, { label: "State", key: "state" }, { label: "Country", key: "country" }, { label: "Phone", key: "phone_number" }, { label: "Actions" }],
-  flights: [{ label: "Client", key: "client_id" }, { label: "Airline", key: "airline_id" }, { label: "date", key: "date" }, { label: "Start City", key: "start_city" }, { label: "End City", key: "end_city" }, { label: "Actions" }],
+  flights: [{ label: "Client", key: "client_id" }, { label: "Airline", key: "airline_id" }, { label: "Date", key: "date" }, { label: "Start City", key: "start_city" }, { label: "End City", key: "end_city" }, { label: "Actions" }],
   airlines: [{ label: "ID", key: "id" }, { label: "Company Name", key: "company_name" }, { label: "Actions" }]
 }
 

@@ -16,7 +16,6 @@ body {
     padding-bottom: 10%;
     margin-left: 10%;
     width: 80%;
-
 }
 
 .table-inner-wrapper {
@@ -59,7 +58,7 @@ table {
     border-radius: 20px;
     padding-left: 5%;
     border: none;
-    width: 80%;
+    width: 100%;
 }
 
 .table-header {

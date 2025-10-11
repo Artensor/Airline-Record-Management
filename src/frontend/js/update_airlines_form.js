@@ -1,6 +1,6 @@
 
 //get all data and fill the update form
-async function getRecordData(id, form) {
+export async function getRecordData(id, form) {
 
     if (id) {
 
@@ -15,7 +15,7 @@ async function getRecordData(id, form) {
 
 }
 
-const formSubmit = (id) => async (event) =>  {
+export const formSubmit = (id) => async (event) => {
     event.preventDefault();
     const form = event.target;
 
@@ -36,15 +36,3 @@ const formSubmit = (id) => async (event) =>  {
     alert("Submitted");
 };
 
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    //get form from the page
-    const form = document.getElementById("update_airlines_form")
-
-    // get record params from the url
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
-    getRecordData(id, form);
-    form.addEventListener("submit", formSubmit(id));
-});
