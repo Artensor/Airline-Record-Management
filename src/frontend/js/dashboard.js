@@ -103,7 +103,7 @@ function table(data, type, tableHeadings) {
     <div class="table-inner-wrapper">
     
       <div class="add-button-wrapper">
-        <a href="add_new_${type}_form.html" class="add-new-btn">+ Add New</a>  
+        <a href="add_new_${type}_form.html" class="add-new-btn">+ Add</a>  
       </div> 
       
       <form class="search-form">
