@@ -361,7 +361,7 @@ curl -i -X DELETE http://127.0.0.1:5000/api/v1/flights/101/301/2999-01-01
 
 ## Testing
 
-- **Backend unit tests**
+**Backend unit tests**
 ```bash
 export DATA_DIR=./data-test 
 python run_tests.py
@@ -376,12 +376,29 @@ The runner discovers tests under `tests_unittest/`.
 Tests use temp folders and reset repo singletons, so they won’t affect your live data.
 
 
-- **Frontend testing**
+**Frontend testing**
 
-Manual UAT: open `dashboard.html` → run Create/Update/Delete/Search flows.
-Lightweight test harness under frontend/tests/ (`tests.html`, `tests.js`).
+  There are two ways to test the frontend:
 
-Ensure IDs entered are integers, as backend requires numeric IDs.
+  1. **Manual UAT (User Acceptance Testing)**
+
+  - Run the backend server (`serve_stdlib.py`).
+
+  - Open `dashboard.html` in a browser.
+
+  - Run through Create → Update → Delete → Search flows for Clients, Airlines, and Flights.
+
+  - Confirm IDs are entered as integers (backend requires numeric IDs).
+
+  2. **Automated GUI Test Harness**
+
+  - Open `src/frontend/tests/tests.html` by double-clicking the file (or right-click → "Open With Browser").  
+
+  - The page will load and display which tests have passed.
+
+  - For detailed logs, open **DevTools** → **Console** (right-click → Inspect → Console tab).
+
+  This allows you to verify the core GUI logic (form handlers, API calls, validation) without manual input.
 
 ---
 
