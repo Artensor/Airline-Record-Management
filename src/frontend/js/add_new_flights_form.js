@@ -20,28 +20,31 @@ export async function formFlightsSubmit(event) {
   const flightData = { client_id, airline_id, date, start_city, end_city };
 
   try {
-    const res = await fetch(`http://127.0.0.1:5000/api/v1/flights`, {
+    const res = await fetch("http://127.0.0.1:5000/api/v1/flights", {
       method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: JSON.stringify(flightData)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(flightData),
     });
 
-    // If you want visible errors instead of silent failures:
-    if (!res.ok && !isTest) {
-      let msg = `create failed (status ${res.status})`;
-      try {
-        const j = await res.json();
-        if (j?.error) msg = `create failed: ${j.error}`;
-      } catch {}
-      alert(msg);
-      return;
+    if (!res.ok) {
+      // surface API error in real runs; still return a structured result
+      if (!isTest) {
+        let msg = `create failed (status ${res.status})`;
+        try {
+          const j = await res.json();
+          if (j?.error) msg = `create failed: ${j.error}`;
+        } catch {}
+        alert(msg);
+      }
+      return { ok: false, status: res.status };
     }
 
-    // Success UX is handled by the page script (which already skips during tests)
-    // so we just return here.
+    // success — page script will alert + redirect (unless in tests)
+    return { ok: true, status: res.status };
 
   } catch (err) {
     console.error("Error:", err);
     if (!isTest) alert("network error — please try again.");
+    return { ok: false, reason: "network-error" };
   }
 }
