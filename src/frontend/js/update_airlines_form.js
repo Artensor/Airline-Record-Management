@@ -33,6 +33,6 @@ export const formUpdateAirlinesSubmit = (id) => async (event) => {
     //show confirmation and redirect back to Airlines table (only outside test runner)
     if (!window.IS_TEST_ENV) {
         alert("Submitted");
-        window.location.href = "/dashboard.html?tab=airlines";
+        window.location.href = "/?tab=airlines";
     }
 };

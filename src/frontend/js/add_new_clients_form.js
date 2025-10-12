@@ -33,7 +33,7 @@ export async function formClientsSubmit(event) {
     if (!window.IS_TEST_ENV) {
       alert("Submitted");
       // use absolute path so it works from any page (e.g. /tests/)
-      window.location.href = "/dashboard.html?tab=clients";
+      window.location.href = "/?tab=clients";
     }
 
   } catch (err) {

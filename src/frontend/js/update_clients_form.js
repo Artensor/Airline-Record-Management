@@ -63,7 +63,7 @@ export const formUpdateClientsSubmit = (id) => async (event) => {
         //show success message and redirect back to clients dashboard (only outside test runner)
         if (!window.IS_TEST_ENV) {
             alert("submitted");
-            window.location.href = "/dashboard.html?tab=clients";
+            window.location.href = "/?tab=clients";
         }
 
     } catch (e) {

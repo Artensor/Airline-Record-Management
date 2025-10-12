@@ -115,7 +115,7 @@ Stop with Ctrl+C.
 
   With the server running, open the GUI in a browser:
 
-  👉 http://127.0.0.1:5000/dashboard.html
+  👉 http://127.0.0.1:5000/
 
   The dashboard allows navigation across Clients, Airlines, and Flights, with options to add, update, delete, and search records.
 
@@ -143,7 +143,7 @@ src/
     flights/                # flights repo + service
     common/                 # JSON load/save + validation helpers
   frontend/                 # GUI (HTML/CSS/JS)
-    dashboard.html           # main dashboard
+    index.html              # main dashboard
     add_new_clients_form.html
     add_new_airlines_form.html
     add_new_flights_form.html
@@ -408,7 +408,7 @@ python -m unittest tests_unittest/test_health_endpoint.py
 
   - Run the backend server (`serve_stdlib.py`).
 
-  - Open `dashboard.html` in a browser.
+  - Open `http://127.0.0.1:5000` in a browser.
 
   - Run through Create → Update → Delete → Search flows for Clients, Airlines, and Flights.
 
@@ -432,7 +432,7 @@ The GUI is built with vanilla HTML, CSS, and JavaScript and connects to the back
 
 **Structure**
 
-- `dashboard.html`→ entry point (tabs for Clients, Airlines, Flights)
+- `index.html`→ entry point (tabs for Clients, Airlines, Flights)
 
 **Entity Forms**
 

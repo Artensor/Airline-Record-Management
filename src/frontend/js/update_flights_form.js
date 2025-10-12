@@ -84,7 +84,7 @@ export const formUpdateFlightsSubmit = (client_id, airline_id, old_date) => asyn
     // success UX (skip in tests)
     if (!isTest) {
       alert("submitted");
-      window.location.href = "dashboard.html?tab=flights";
+      window.location.href = "/?tab=flights";
     }
   } catch (e) {
     console.error("network error:", e);

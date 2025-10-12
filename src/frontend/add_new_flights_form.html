@@ -35,7 +35,7 @@
         // Only navigate/alert on true success (and not in test runs)
         if (result?.ok && !window.IS_TEST_ENV) {
             alert("Submitted");
-            window.location.href = "dashboard.html?tab=flights";
+            window.location.href = "/?tab=flights";
         }
         });
     });
