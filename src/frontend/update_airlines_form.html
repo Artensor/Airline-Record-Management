@@ -4,40 +4,40 @@
 </title>
 
 <head>
-
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <form id="update_airlines_form" type="submit">
+    <form id="update_airlines_form">
         <h1>Update Airline</h1>
         <label for="company_name"> Company Name </label><br>
         <input type="text" name="company_name" /><br>
-        <label for="Type"> Type </label><br>
+        <label for="type"> Type </label><br>
         <input type="text" name="type" /><br>
 
         <input type="submit">
     </form>
+
     <!-- Load JavaScript file -->
     <script type="module">
         import { getAirlineData, formUpdateAirlinesSubmit } from "./js/update_airlines_form.js";
+
         document.addEventListener("DOMContentLoaded", () => {
 
             //get form from the page
-            const form = document.getElementById("update_airlines_form")
+            const form = document.getElementById("update_airlines_form");
 
             // get record params from the url
             const params = new URLSearchParams(window.location.search);
             const id = params.get("id");
+
+            // prefill the form with airline data
             getAirlineData(id, form);
-            form.addEventListener("submit", async (event) => {
-                await formUpdateAirlinesSubmit(event);
-                window.location.href = "dashboard.html?tab=airlines";
-                alert("Submitted");
-            });
+
+            // bind the id into the submit handler (do not wrap it)
+            form.addEventListener("submit", formUpdateAirlinesSubmit(Number(id)));
         });
     </script>
 
 </body>
-
 </html>

@@ -8,14 +8,14 @@
 </head>
 
 <body>
-    <form id="add_new_flights_form" type="submit">
+    <form id="add_new_flights_form">
         <h1>Add New Flight</h1>
         <label for="client_id"> Client ID </label><br>
         <input type="number" name="client_id" min="0" /><br>
         <label for="airline_id"> Airline ID </label><br>
         <input type="number" name="airline_id" min="0" /><br>
         <label for="date"> Date </label><br>
-        <input type="datetime" name="date" /><br>
+        <input type="date" name="date" /><br>
         <label for="start_city"> Start City </label><br>
         <input type="text" name="start_city" /><br>
         <label for="end_city"> End City </label><br>
@@ -23,21 +23,22 @@
 
         <input type="submit">
     </form>
+
     <!-- Load JavaScript file -->
     <script type="module">
-        import { formFlightsSubmit } from "./js/add_new_flights_form.js";
-        document.addEventListener("DOMContentLoaded", () => {
-            const form = document.getElementById("add_new_flights_form")
-            form.addEventListener("submit", async (event) => {
-                await formFlightsSubmit(event);
-                window.location.href = "dashboard.html?tab=flights";
-                alert("Submitted");
-            });
+    import { formFlightsSubmit } from "./js/add_new_flights_form.js";
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("add_new_flights_form");
+        form.addEventListener("submit", async (event) => {
+        const result = await formFlightsSubmit(event);
+
+        // Only navigate/alert on true success (and not in test runs)
+        if (result?.ok && !window.IS_TEST_ENV) {
+            alert("Submitted");
+            window.location.href = "dashboard.html?tab=flights";
+        }
         });
-
-
-    </script>
-
+    });
+    </script>   
 </body>
-
 </html>

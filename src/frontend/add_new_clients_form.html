@@ -8,7 +8,6 @@
 </head>
 
 <body>
-
     <form id="add_new_clients_form" type="submit">
         <h1>Add New Client</h1>
         <label for="id">Client ID</label><br>
@@ -41,15 +40,12 @@
     <script type="module">
         import { formClientsSubmit } from "./js/add_new_clients_form.js";
         document.addEventListener("DOMContentLoaded", () => {
+            //get form from the page
             const form = document.getElementById("add_new_clients_form");
-            form.addEventListener("submit", async (event) => {
-                await formClientsSubmit(event);
-                window.location.href = "dashboard.html?tab=clients";
-                alert("Submitted");
-            });
+
+            //bind submit handler (no wrapper; JS will handle redirect/alerts)
+            form.addEventListener("submit", formClientsSubmit);
         });
     </script>
-
 </body>
-
 </html>

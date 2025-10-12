@@ -8,28 +8,39 @@
 </head>
 
 <body>
-    <form id="add_new_airlines_form" type="submit">
+    <form id="add_new_airlines_form">
         <h1>Add New Airline</h1>
         <label for="id">ID</label><br>
         <input type="number" name="id" id="id" min="0"><br>
+
         <label for="company_name"> Company Name </label><br>
         <input type="text" name="company_name" /><br>
-        <label for="Type"> Type </label><br>
+
+        <label for="type"> Type </label><br>
         <input type="text" name="type" /><br>
 
         <input type="submit">
     </form>
+
     <!-- Load JavaScript file -->
     <script type="module">
         import { formAirlinesSubmit } from "./js/add_new_airlines_form.js";
-        const form = document.getElementById("add_new_airlines_form");
-        form.addEventListener("submit", async (event) => {
-            await formAirlinesSubmit(event);
-            window.location.href = "dashboard.html?tab=airlines";
-            alert("Submitted");
-        }); 
+
+        document.addEventListener("DOMContentLoaded", () => {
+            //get form from the page
+            const form = document.getElementById("add_new_airlines_form");
+
+            //bind submit handler (JS handles redirect/alerts)
+            form.addEventListener("submit", async (event) => {
+                await formAirlinesSubmit(event);
+
+                // prevent alerts/redirects when running tests
+                if (!window.IS_TEST_ENV) {
+                    window.location.href = "/dashboard.html?tab=airlines"; // absolute path
+                    alert("Submitted");
+                }
+            });
+        });
     </script>
-
 </body>
-
 </html>

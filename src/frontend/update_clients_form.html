@@ -1,60 +1,64 @@
 <html>
-<title>
-    Airline Record Management System
-</title>
-
-<head>
+  <head>
+    <title>Airline Record Management System</title>
     <link rel="stylesheet" href="style.css">
+  </head>
 
-</head>
-
-<body>
+  <body>
     <form id="update_clients_form" type="submit">
-        <h1>Update Airline</h1>
-        <label for="Name"> Name </label><br>
-        <input type="text" name="name" /><br>
-        <label for="Type"> Type </label><br>
-        <input type="text" name="type" /><br>
-        <label for="PhoneNumber"> Phone Number </label><br>
-        <input type="text" name="phone_number" /><br>
-        <label for="AddressLine1"> Address Line 1 </label><br>
-        <input type="text" name="address_line1" /><br>
-        <label for="Addressline2"> Adress Line 2 </label><br>
-        <input type="text" name="address_line2" /><br>
-        <label for="AddressLine3"> Address Line 3 </label><br>
-        <input type="text" name="address_line3" /><br>
-        <label for="City"> City </label><br>
-        <input type="text" name="city" /><br>
-        <label for="State"> State </label><br>
-        <input type="text" name="state" /><br>
-        <label for="ZipCode"> Zip Code </label><br>
-        <input type="text" name="zip_code" /><br>
-        <label for="Country"> Country </label><br>
-        <input type="text" name="country" /><br>
+      <h1>Update Client</h1>
 
-        <input type="submit">
+      <label for="name">Name</label><br>
+      <input type="text" name="name" /><br>
+
+      <label for="type">Type</label><br>
+      <input type="text" name="type" /><br>
+
+      <label for="phone_number">Phone Number</label><br>
+      <input type="text" name="phone_number" /><br>
+
+      <label for="address_line1">Address Line 1</label><br>
+      <input type="text" name="address_line1" /><br>
+
+      <label for="address_line2">Address Line 2</label><br>
+      <input type="text" name="address_line2" /><br>
+
+      <label for="address_line3">Address Line 3</label><br>
+      <input type="text" name="address_line3" /><br>
+
+      <label for="city">City</label><br>
+      <input type="text" name="city" /><br>
+
+      <label for="state">State</label><br>
+      <input type="text" name="state" /><br>
+
+      <label for="zip_code">Zip Code</label><br>
+      <input type="text" name="zip_code" /><br>
+
+      <label for="country">Country</label><br>
+      <input type="text" name="country" /><br>
+
+      <input type="submit" value="Submit">
     </form>
+
     <!-- Load JavaScript file -->
     <script type="module">
-        import { getClientData, formUpdateClientsSubmit } from "./js/update_clients_form.js";
-        document.addEventListener("DOMContentLoaded", () => {
+      import { getClientData, formUpdateClientsSubmit } from "./js/update_clients_form.js";
 
-            //get form from the page
-            const form = document.getElementById("update_clients_form")
+      document.addEventListener("DOMContentLoaded", () => {
+        // get form from the page
+        const form = document.getElementById("update_clients_form");
 
-            // get record params from the url
-            const params = new URLSearchParams(window.location.search);
-            const id = params.get("id");
-            getClientData(id, form);
-            form.addEventListener("submit", async (event) => {
-                await formUpdateClientsSubmit(event)
-                window.location.href = "dashboard.html?tab=clients";
-                alert("Submitted");
-            });
+        // get record params from the url
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
 
-        });
+        // pre-fill form with existing client data
+        getClientData(id, form);
+
+        // bind the id into the submit handler
+        form.addEventListener("submit", formUpdateClientsSubmit(Number(id)));
+      });
     </script>
-
-</body>
-
+  </body>
 </html>

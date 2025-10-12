@@ -18,18 +18,42 @@ async function deleteRecord(type, id) {
     return;
   }
 
+  // build the endpoint; flights use composite identity
+  let url;
+  if (type === "flights") {
+    // id is "client_id/airline_id/date"
+    const [client_id, airline_id, rawDate] = String(id).split("/");
+    const date = encodeURIComponent(rawDate); // be safe for ISO timestamps
+    url = `http://127.0.0.1:5000/api/v1/flights/${client_id}/${airline_id}/${date}`;
+  } else {
+    url = `http://127.0.0.1:5000/api/v1/${type}/${id}`;
+  }
+
   try {
-    const res = await fetch(`http://127.0.0.1:5000/api/v1/${type}/${id}`, { method: "DELETE" });
+    const res = await fetch(url, { method: "DELETE" });
+
     if (res.ok) {
       alert("Record was deleted.");
       location.reload();
-    } else {
-      alert("Record wasn't deleted.");
-      console.error("Server error:", await res.text());
+      return;
     }
+
+    // surface server error (e.g., 422 delete guard)
+    let msg = `Record wasn't deleted (status ${res.status}).`;
+    try {
+      const payload = await res.json();
+      if (payload && payload.error) msg = payload.error;
+    } catch {
+      try {
+        const t = await res.text();
+        if (t) msg = t;
+      } catch {}
+    }
+    alert(msg);
+
   } catch (err) {
     console.error("Error:", err);
-    alert("An unexpected error occurred.");
+    alert("Network error — please try again.");
   }
 }
 

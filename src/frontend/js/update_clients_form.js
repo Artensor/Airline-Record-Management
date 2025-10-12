@@ -1,4 +1,3 @@
-
 //get all data and fill the update form
 export async function getClientData(id, form) {
 
@@ -23,11 +22,12 @@ export async function getClientData(id, form) {
 
 }
 
+//submit handler for updating a client
 export const formUpdateClientsSubmit = (id) => async (event) => {
     event.preventDefault();
     const form = event.target;
 
-    //updates inputs
+    //build updated client payload
     const updatedClient = {
         name: form.elements["name"].value,
         type: form.elements["type"].value,
@@ -41,12 +41,36 @@ export const formUpdateClientsSubmit = (id) => async (event) => {
         country: form.elements["country"].value
     };
 
+    try {
+        //send the request to update the client
+        const res = await fetch(`http://127.0.0.1:5000/api/v1/clients/${id}`, {
+            method: "PUT",
+            headers: { "Content-type": "application/json" },
+            body: JSON.stringify(updatedClient)
+        });
 
-    //send the request to update the client
-    fetch(`http://127.0.0.1:5000/api/v1/clients/${id}`, {
-        method: "PUT",
-        headers: { "Content-type": "application/json" },
-        body: JSON.stringify(updatedClient)
-    })
+        //check if request was successful
+        if (!res.ok) {
+            let errText = `update failed (status ${res.status})`;
+            try {
+                const errJson = await res.json();
+                if (errJson && errJson.error) errText = `update failed: ${errJson.error}`;
+            } catch { /* ignore parse errors */ }
+            alert(errText);
+            return;
+        }
 
+        //show success message and redirect back to clients dashboard (only outside test runner)
+        if (!window.IS_TEST_ENV) {
+            alert("submitted");
+            window.location.href = "/dashboard.html?tab=clients";
+        }
+
+    } catch (e) {
+        //handle network error
+        console.error("network error:", e);
+        if (!window.IS_TEST_ENV) {
+            alert("network error — please try again.");
+        }
+    }
 }

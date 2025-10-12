@@ -5,45 +5,45 @@
 
 <head>
     <link rel="stylesheet" href="style.css">
-
 </head>
 
 <body>
-    <form id="update_flights_form" type="submit">
+    <form id="update_flights_form">
         <h1>Update Flight</h1>
+
         <label for="date"> Date </label><br>
-        <input type="datetime" name="date" /><br>
+        <!-- use date or datetime-local; backend accepts both -->
+        <input type="date" name="date" /><br>
+
         <label for="start_city"> Start City </label><br>
         <input type="text" name="start_city" /><br>
+
         <label for="end_city"> End City </label><br>
         <input type="text" name="end_city" /><br>
 
         <input type="submit">
     </form>
+
     <!-- Load JavaScript file -->
     <script type="module">
         import { getFlightData, formUpdateFlightsSubmit } from "./js/update_flights_form.js";
         document.addEventListener("DOMContentLoaded", () => {
 
             //get form from the page
-            const form = document.getElementById("update_flights_form")
+            const form = document.getElementById("update_flights_form");
 
             // get record params from the url
             const params = new URLSearchParams(window.location.search);
-            const client_id = params.get("client_id");
-            const airline_id = params.get("airline_id");
+            const client_id = Number(params.get("client_id"));
+            const airline_id = Number(params.get("airline_id"));
             const date = params.get("date");
-            console.log(date);
 
+            //prefill form with existing data
             getFlightData(client_id, airline_id, date, form);
-            form.addEventListener("submit", async (event) => {
-                await formUpdateFlightsSubmit(event);
-                window.location.href = "dashboard.html?tab=flights";
-                alert("Submitted");
-            });
+
+            //bind composite identity into the submit handler (do not wrap it)
+            form.addEventListener("submit", formUpdateFlightsSubmit(client_id, airline_id, date));
         });
     </script>
-
 </body>
-
 </html>
