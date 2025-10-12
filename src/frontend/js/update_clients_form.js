@@ -60,13 +60,17 @@ export const formUpdateClientsSubmit = (id) => async (event) => {
             return;
         }
 
-        //show success message and redirect back to clients dashboard
-        alert("submitted");
-        window.location.href = "dashboard.html?tab=clients";
+        //show success message and redirect back to clients dashboard (only outside test runner)
+        if (!window.IS_TEST_ENV) {
+            alert("submitted");
+            window.location.href = "/dashboard.html?tab=clients";
+        }
 
     } catch (e) {
         //handle network error
         console.error("network error:", e);
-        alert("network error — please try again.");
+        if (!window.IS_TEST_ENV) {
+            alert("network error — please try again.");
+        }
     }
 }

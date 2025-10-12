@@ -30,7 +30,9 @@ export const formUpdateAirlinesSubmit = (id) => async (event) => {
         body: JSON.stringify(updatedAirline)
     });
 
-    //show confirmation and redirect back to Airlines table
-    alert("Submitted");
-    window.location.href = "dashboard.html?tab=airlines";
+    //show confirmation and redirect back to Airlines table (only outside test runner)
+    if (!window.IS_TEST_ENV) {
+        alert("Submitted");
+        window.location.href = "/dashboard.html?tab=airlines";
+    }
 };

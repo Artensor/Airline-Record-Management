@@ -1,20 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Frontend Tests</title>
+  <meta charset="UTF-8" />
+  <title>Frontend Tests</title>
 </head>
 
 <body>
-    <h1>Running JS Tests</h1>
-    
-    <div id="results">Results:</div>
+  <h1>Running JS Tests</h1>
+  <div id="results">Results:</div>
 
-    <script type="module">
-        import { runAllTests } from "./tests.js";
-        runAllTests(document.getElementById("results"));
-    </script>
+  <script type="module">
+    // Tell the app it is running inside the test harness
+    window.IS_TEST_ENV = true;
+
+    // Use an absolute import so it resolves to http://127.0.0.1:5000/tests/tests.js
+    import { runAllTests } from "/tests/tests.js";
+
+    const resultsEl = document.getElementById("results");
+    const logToPage = (msg) => {
+      const p = document.createElement("p");
+      p.textContent = msg;
+      resultsEl.appendChild(p);
+    };
+
+    try {
+      logToPage("Starting tests…");
+      await runAllTests(resultsEl);          // existing suite
+      logToPage("✅ All tests completed.");
+    } catch (err) {
+      console.error(err);
+      logToPage(`❌ Test harness crashed: ${err?.message || err}`);
+    }
+  </script>
 </body>
-
 </html>

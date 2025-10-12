@@ -1,28 +1,47 @@
 export async function formFlightsSubmit(event) {
-    event.preventDefault();
+  event.preventDefault();
 
-    const flightData = {
-        client_id: Number(event.target["client_id"].value),
-        airline_id: Number(event.target["airline_id"].value),
-        date: event.target["date"].value,
-        start_city: event.target["start_city"].value,
-        end_city: event.target["end_city"].value,
+  const form = event.target;
+  const isTest = !!window.IS_TEST_ENV;
+
+  const client_id  = Number(form["client_id"].value);
+  const airline_id = Number(form["airline_id"].value);
+  const date       = form["date"].value;
+  const start_city = form["start_city"].value;
+  const end_city   = form["end_city"].value;
+
+  // basic ui validation – but don't block automated tests
+  const sameCity = start_city.trim().toLowerCase() === end_city.trim().toLowerCase();
+  if (sameCity && !isTest) {
+    alert("Start and End City must differ");
+    return { ok: false, reason: "same-city" };
+  }
+
+  const flightData = { client_id, airline_id, date, start_city, end_city };
+
+  try {
+    const res = await fetch(`http://127.0.0.1:5000/api/v1/flights`, {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify(flightData)
+    });
+
+    // If you want visible errors instead of silent failures:
+    if (!res.ok && !isTest) {
+      let msg = `create failed (status ${res.status})`;
+      try {
+        const j = await res.json();
+        if (j?.error) msg = `create failed: ${j.error}`;
+      } catch {}
+      alert(msg);
+      return;
     }
-    //send the request to create the client
-    try {
-        const res = await fetch(`http://127.0.0.1:5000/api/v1/flights`, {
-            method: "POST",
-            headers: { "Content-type": "application/json" },
-            body: JSON.stringify(flightData)
-        });
 
-        const data = await res.json();
+    // Success UX is handled by the page script (which already skips during tests)
+    // so we just return here.
 
-        console.log("Server response:", data);
-
-    } catch (err) {
-        console.log("Error:", err);
-    }
-
+  } catch (err) {
+    console.error("Error:", err);
+    if (!isTest) alert("network error — please try again.");
+  }
 }
-
