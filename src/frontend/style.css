@@ -132,8 +132,13 @@ main {
 
 #add_new_clients_form h1 {
 
+    text-align: center;
     background-color: #D9D9D9;
     border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 25px;
+    font-weight: bold;
+    font-size: 1.8rem;
 
 }
 
@@ -151,8 +156,13 @@ main {
 
 #add_new_airlines_form h1 {
 
+    text-align: center;
     background-color: #D9D9D9;
     border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 25px;
+    font-weight: bold;
+    font-size: 1.8rem;
 
 }
 
@@ -170,8 +180,13 @@ main {
 
 #add_new_flights_form h1 {
 
+    text-align: center;
     background-color: #D9D9D9;
     border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 25px;
+    font-weight: bold;
+    font-size: 1.8rem;
 
 }
 
@@ -189,8 +204,13 @@ main {
 
 #update_clients_form h1 {
 
+    text-align: center;
     background-color: #D9D9D9;
     border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 25px;
+    font-weight: bold;
+    font-size: 1.8rem;
 
 }
 
@@ -208,8 +228,13 @@ main {
 
 #update_airlines_form h1 {
 
+    text-align: center;
     background-color: #D9D9D9;
     border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 25px;
+    font-weight: bold;
+    font-size: 1.8rem;
 
 }
 
@@ -227,7 +252,12 @@ main {
 
 #update_flights_form h1 {
 
+    text-align: center;
     background-color: #D9D9D9;
     border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 25px;
+    font-weight: bold;
+    font-size: 1.8rem;
 
 }
