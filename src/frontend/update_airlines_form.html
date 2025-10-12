@@ -19,7 +19,7 @@
     </form>
     <!-- Load JavaScript file -->
     <script type="module">
-        import { getRecordData, formSubmit } from "./js/update_airlines_form.js";
+        import { getAirlineData, formUpdateAirlinesSubmit } from "./js/update_airlines_form.js";
         document.addEventListener("DOMContentLoaded", () => {
 
             //get form from the page
@@ -28,8 +28,12 @@
             // get record params from the url
             const params = new URLSearchParams(window.location.search);
             const id = params.get("id");
-            getRecordData(id, form);
-            form.addEventListener("submit", formSubmit(id));
+            getAirlineData(id, form);
+            form.addEventListener("submit", async (event) => {
+                await formUpdateAirlinesSubmit(event);
+                window.location.href = "dashboard.html?tab=airlines";
+                alert("Submitted");
+            });
         });
     </script>
 
