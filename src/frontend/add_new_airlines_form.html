@@ -20,11 +20,13 @@
     </form>
     <!-- Load JavaScript file -->
     <script type="module">
-        import {formSubmit} from "./js/add_new_airlines_form.js";
-        document.addEventListener("DOMContentLoaded", () => {
-            const form = document.getElementById("add_new_airlines_form")
-            form.addEventListener("submit", formSubmit);
-        });
+        import { formAirlinesSubmit } from "./js/add_new_airlines_form.js";
+        const form = document.getElementById("add_new_airlines_form");
+        form.addEventListener("submit", async (event) => {
+            await formAirlinesSubmit(event);
+            window.location.href = "dashboard.html?tab=airlines";
+            alert("Submitted");
+        }); 
     </script>
 
 </body>
