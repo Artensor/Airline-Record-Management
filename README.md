@@ -6,16 +6,17 @@
 
 ## Table of Contents
 
-1. [Overview](#overview)
-2. [Features](#features)
-3. [Requirements](#requirements)
-4. [Quick Start](#quick-start)
-5. [Project Structure](#project-structure)
-6. [Data Models](#data-models)
-7. [API Reference](#api-reference-v1)
-8. [Status Codes](#status-codes)
-9. [Testing](#testing)
-10. [Frontend Details](#frontend-details)
+1. [Overview](#overview)  
+2. [Features](#features)  
+3. [Requirements](#requirements)  
+4. [Quick Start](#quick-start)  
+5. [Repository Link](#repository-link)  
+6. [Project Structure](#project-structure)  
+7. [Data Models](#data-models)  
+8. [API Reference](#api-reference-v1)  
+9. [Status Codes](#status-codes)  
+10. [Testing](#testing)  
+11. [Frontend Details](#frontend-details)  
 
 ---
 
@@ -117,6 +118,13 @@ Stop with Ctrl+C.
   👉 http://127.0.0.1:5000/dashboard.html
 
   The dashboard allows navigation across Clients, Airlines, and Flights, with options to add, update, delete, and search records.
+
+---
+
+## Repository Link
+
+This project is hosted on GitHub:
+🔗 https://github.com/Artensor/Airline-Record-Management
 
 ---
 
@@ -225,7 +233,13 @@ Base URL: http://127.0.0.1:5000
 **Health**
 
 ```bash
-GET /health → {"status":"ok"}
+GET /api/v1/health → {"status":"ok"}
+```
+
+**Example**
+```bash
+curl -s http://127.0.0.1:5000/api/v1/health
+# {"status": "ok"}
 ```
 
 **Clients**
@@ -374,6 +388,16 @@ python run_tests.py
 The runner discovers tests under `tests_unittest/`.
 
 Tests use temp folders and reset repo singletons, so they won’t affect your live data.
+
+**Integration check (Health endpoint)**
+
+A lightweight unittest `tests_unittest/test_health_endpoint.py` confirms `/api/v1/health` works.
+
+Run with the server running:
+
+```bash
+python -m unittest tests_unittest/test_health_endpoint.py
+```
 
 
 **Frontend testing**

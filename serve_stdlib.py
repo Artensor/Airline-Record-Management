@@ -66,12 +66,19 @@ class Handler(SimpleHTTPRequestHandler):
                 self.path = "/" + os.path.basename(LANDING_PAGE)
             return super().do_GET()
         try:
+            # parse path/query
             parts, qs = self._parts_qs()
-            if parts == ["health"]:
-                return write_json(self, 200, {"status": "ok"})
+
+            # validate API prefix
             if len(parts) < 2 or ("/" + parts[0] + "/" + parts[1]) != API_PREFIX:
                 return write_json(self, 404, {"error": "Not Found"})
+
+            # tail after /api/v1
             tail = parts[2:]
+
+            # health endpoint
+            if tail == ["health"]:
+                return write_json(self, 200, {"status": "ok"})
 
             # clients collection
             if tail == ["clients"]:
@@ -106,7 +113,9 @@ class Handler(SimpleHTTPRequestHandler):
             if len(tail) == 4 and tail[0] == "flights":
                 return write_json(self, 200, flights_svc.get_flight(int(tail[1]), int(tail[2]), tail[3]))
 
+            # not matched
             return write_json(self, 404, {"error": "Not Found"})
+
         except Exception as e:
             return write_json(self, map_error(e), {"error": str(e)})
 
