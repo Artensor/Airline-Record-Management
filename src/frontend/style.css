@@ -119,4 +119,50 @@ main {
 
 #add_new_clients_form {
     background-color: #F3F7DA;
+    text-align: center;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 15px;
+}
+
+
+
+#add_new_airlines_form {
+    background-color: #F3F7DA;
+    text-align: center;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 15px;
+}
+
+#add_new_flights_form {
+    background-color: #F3F7DA;
+    text-align: center;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 15px;
+}
+
+#update_clients_form {
+    background-color: #F3F7DA;
+    text-align: center;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 15px;
+}
+
+#update_airlines_form {
+    background-color: #F3F7DA;
+    text-align: center;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 15px;
+}
+
+#update_flights_form {
+    background-color: #F3F7DA;
+    text-align: center;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 15px;
 }

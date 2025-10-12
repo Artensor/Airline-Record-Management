@@ -362,29 +362,6 @@ async function testUpdateFlights(log) {
     log("testUpdateFlights passed");
 }
 
-function testDeleteRecord() {
-
-    if (true) {
-
-    }
-
-
-    // console.assert();
-
-}
-
-
-function testDashboardTable() {
-
-    if (true) {
-
-    }
-
-
-    // console.assert();
-
-}
-
 export async function runAllTests(results) {
     const log = (item) => {
         const child = document.createElement("p");
