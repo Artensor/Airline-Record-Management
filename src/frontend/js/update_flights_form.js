@@ -51,8 +51,6 @@ export const formUpdateFlightsSubmit = (client_id, airline_id, old_date) => asyn
             body: JSON.stringify(updatedFlight)
         });
     }
-    window.location.href = "dashboard.html?tab=flights";
-    alert("Submitted");
 }
 
 

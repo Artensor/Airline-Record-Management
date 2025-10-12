@@ -8,8 +8,9 @@ import { formUpdateFlightsSubmit, getFlightData } from "../js/update_flights_for
 
 let fetch_args;
 
-window.fetch = async (url, options) => {
-    if (url.includes("/clients/6") && !options) {
+window.fetch = async (url, options = {}) => {
+
+    if (url.includes("/clients/6") && !options.method) {
         console.log("Mock fetch GET client data:", url);
         return {
             ok: true,
@@ -48,17 +49,19 @@ window.fetch = async (url, options) => {
             json: async () => ({ message: "Client updated successfully" }),
         };
     }
-    if (url.includes("/airlines/") && !options) {
+
+    if (url.includes("/airlines/1") && !options.method) {
         console.log("Mock fetch GET airline data:", url);
         return {
             ok: true,
             json: async () => ({
                 id: 1,
                 company_name: "Wow Airlines",
-                type: "Charter"
+                type: "Charter",
             }),
         };
     }
+
     if (url.endsWith("/airlines") && options.method === "POST") {
         fetch_args = [url, options];
         console.log("Mock fetch POST (airline):", url, options);
@@ -69,8 +72,6 @@ window.fetch = async (url, options) => {
         };
     }
 
-
-
     if (url.includes("/airlines/") && options.method === "PUT") {
         fetch_args = [url, options];
         console.log("Mock fetch PUT (airline):", url, options);
@@ -80,7 +81,40 @@ window.fetch = async (url, options) => {
             json: async () => ({ message: "Airline updated successfully" }),
         };
 
+    }
 
+    if (url.includes("/flights/5/1/2025-11-12") && !options.method) {
+        console.log("Mock fetch GET flight data:", url);
+        return {
+            ok: true,
+            json: async () => ({
+                client_id: 5,
+                airline_id: 1,
+                type: "Charter",
+                date: "2025-11-12",
+                start_city: "LAX",
+                end_city: "SFO",
+            }),
+        };
+    }
+
+    if (url.includes("/flights/5/1/2025-11-12") && options.method === "PUT") {
+        fetch_args = [url, options];
+        console.log("Mock fetch PUT (flight):", url, options);
+        return {
+            ok: true,
+            status: 200,
+            json: async () => ({ message: "Flight updated successfully" }),
+        };
+    }
+
+    if (url === "http://127.0.0.1:5000/api/v1/flights/5/1/2025-11-12" && options.method === "DELETE") {
+        console.log("Mock fetch DELETE (flight):", url);
+        return {
+            ok: true,
+            status: 200,
+            json: async () => ({ message: "Flight deleted successfully" }),
+        };
     }
 
     if (url.endsWith("/flights") && options.method === "POST") {
@@ -93,17 +127,6 @@ window.fetch = async (url, options) => {
         };
     }
 
-    if (url.includes("/flights/") && options.method === "PUT") {
-        fetch_args = [url, options];
-        console.log("Mock fetch PUT (airline):", url, options);
-        return {
-            ok: true,
-            status: 200,
-            json: async () => ({ message: "Flight updated successfully" }),
-        };
-
-
-    }
 
     throw new Error(`Unhandled fetch request: ${url}`);
 };
@@ -233,7 +256,7 @@ async function testUpdateAirlines(log) {
     const existingAirlineData = {
         id: { value: 1 },
         company_name: { value: "Wowza Airlines" },
-        type: { value: "Charter" }
+        type: { value: "Charter" },
     };
 
     const mockForm = {
@@ -287,19 +310,56 @@ async function testAddNewFlights(log) {
     console.assert(url === "http://127.0.0.1:5000/api/v1/flights", "Wrong URL used in fetch");
     console.assert(options.method === "POST", "Method should be POST");
     console.assert(options.headers["Content-type"] === "application/json", "Missing JSON header");
-    console.assert(JSON.parse(options.body).date === "2025-11-12", "Flighte date was not sent correctly");
+    console.assert(JSON.parse(options.body).date === "2025-11-12", "Flight date was not sent correctly");
 
     log("testAddNewFlights passed");
 }
 
-function testUpdateFlights() {
+async function testUpdateFlights(log) {
+    const existingFlightData = {
+        client_id: { value: 5 },
+        airline_id: { value: 1 },
+        type: { value: "Charter" },
+        date: { value: "2025-11-12" },
+        start_city: { value: "LAX" },
+        end_city: { value: "SFO" }
+    };
 
-    if (true) {
 
-    }
+    const mockForm = {
+        elements: {
+            client_id: { value: "" },
+            airline_id: { value: "" },
+            type: { value: "" },
+            date: { value: "" },
+            start_city: { value: "" },
+            end_city: { value: "" },
+        }
+    };
+
+    await getFlightData(5, 1, "2025-11-12", mockForm);
 
 
-    // console.assert();
+    mockForm.elements["date"].value = "2025-12-02";
+
+
+    const mockEvent = {
+        preventDefault: () => console.log("preventDefault called"),
+        target: mockForm,
+    };
+
+
+    await formUpdateFlightsSubmit(5, 1, "2025-11-12")(mockEvent);
+
+
+    const [url, options] = fetch_args || [];
+
+    console.assert(
+        url === "http://127.0.0.1:5000/api/v1/flights",
+        "Wrong URL for update"
+    );
+    console.assert(JSON.parse(options.body).date === "2025-12-02", "Flight date was not updated correctly");
+    log("testUpdateFlights passed");
 }
 
 function testDeleteRecord() {
@@ -348,7 +408,11 @@ export async function runAllTests(results) {
 
     fetch_args = null;
 
-    await testAddNewFlights(log)
+    await testAddNewFlights(log);
+
+    fetch_args = null;
+
+    await testUpdateFlights(log);
 }
 
 
