@@ -1,4 +1,4 @@
-export async function formClientSubmit(event) {
+export async function formClientsSubmit(event) {
     event.preventDefault();
 
     const clientData = {

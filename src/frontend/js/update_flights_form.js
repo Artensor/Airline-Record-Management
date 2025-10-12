@@ -1,5 +1,5 @@
 //get all data and fill the update form
-export async function getRecordData(client_id, airline_id, date, form) {
+export async function getFlightData(client_id, airline_id, date, form) {
 
     if (client_id && airline_id && date) {
 
@@ -16,7 +16,7 @@ export async function getRecordData(client_id, airline_id, date, form) {
 
 }
 
-export const formSubmit = (client_id, airline_id, old_date) => async (event) => {
+export const formUpdateFlightsSubmit = (client_id, airline_id, old_date) => async (event) => {
     event.preventDefault();
     const form = event.target;
     const new_date = form.elements["date"].value;

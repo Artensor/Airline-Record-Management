@@ -23,7 +23,7 @@ export async function getClientData(id, form) {
 
 }
 
-export const formUpdateClientSubmit = (id) => async (event) => {
+export const formUpdateClientsSubmit = (id) => async (event) => {
     event.preventDefault();
     const form = event.target;
 

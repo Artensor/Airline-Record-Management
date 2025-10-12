@@ -1,4 +1,4 @@
-export async function formFlightSubmit(event) {
+export async function formFlightsSubmit(event) {
     event.preventDefault();
 
     const flightData = {
@@ -19,8 +19,6 @@ export async function formFlightSubmit(event) {
         const data = await res.json();
 
         console.log("Server response:", data);
-        window.location.href = "dashboard.html?tab=flights";
-        alert("Submitted");
 
     } catch (err) {
         console.log("Error:", err);

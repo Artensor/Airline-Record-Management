@@ -1,7 +1,9 @@
-import { formClientSubmit } from "../js/add_new_clients_form.js";
-import { formUpdateClientSubmit, getClientData } from "../js/update_clients_form.js";
-import { formAirlineSubmit } from "../js/add_new_airlines_form.js"
+import { formClientsSubmit } from "../js/add_new_clients_form.js";
+import { formUpdateClientsSubmit, getClientData } from "../js/update_clients_form.js";
+import { formAirlinesSubmit } from "../js/add_new_airlines_form.js"
 import { formUpdateAirlinesSubmit, getAirlineData } from "../js/update_airlines_form.js";
+import { formFlightsSubmit } from "../js/add_new_flights_form.js";
+import { formUpdateFlightsSubmit, getFlightData } from "../js/update_flights_form.js";
 
 
 let fetch_args;
@@ -80,11 +82,34 @@ window.fetch = async (url, options) => {
 
 
     }
+
+    if (url.endsWith("/flights") && options.method === "POST") {
+        fetch_args = [url, options];
+        console.log("Mock fetch POST (airline):", url, options);
+        return {
+            ok: true,
+            status: 200,
+            json: async () => ({ message: "Flight added successfully" }),
+        };
+    }
+
+    if (url.includes("/flights/") && options.method === "PUT") {
+        fetch_args = [url, options];
+        console.log("Mock fetch PUT (airline):", url, options);
+        return {
+            ok: true,
+            status: 200,
+            json: async () => ({ message: "Flight updated successfully" }),
+        };
+
+
+    }
+
     throw new Error(`Unhandled fetch request: ${url}`);
 };
 
 const mockFormClient = {
-    id: { value: "5" },
+    id: { value: 5 },
     name: { value: "Jane Doe" },
     type: { value: "Business" },
     phone_number: { value: "+15555555555" },
@@ -98,7 +123,7 @@ const mockFormClient = {
 };
 
 const mockFormAirline = {
-    id: { value: "1" },
+    id: { value: 1 },
     company_name: { value: "Wow Airlines" },
     type: { value: "Charter" }
 };
@@ -106,15 +131,10 @@ const mockFormAirline = {
 const mockFormFlight = {
     client_id: { value: 5 },
     airline_id: { value: 1 },
-    type: { value: "Business" },
-    phone_number: { value: "+15555555555" },
-    address_line1: { value: "123 Main St" },
-    address_line2: { value: "" },
-    address_line3: { value: "" },
-    city: { value: "New York" },
-    state: { value: "NY" },
-    zip_code: { value: "10001" },
-    country: { value: "USA" },
+    type: { value: "Charter" },
+    date: { value: "2025-11-12" },
+    start_city: { value: "LAX" },
+    end_city: { value: "SFO" }
 };
 
 
@@ -124,7 +144,7 @@ async function testAddNewClients(log) {
         target: mockFormClient,
     };
 
-    await formClientSubmit(mockEvent);
+    await formClientsSubmit(mockEvent);
 
     const [url, options] = fetch_args || [];
 
@@ -178,7 +198,7 @@ async function testUpdateClients(log) {
     };
 
 
-    await formUpdateClientSubmit("6")(mockEvent);
+    await formUpdateClientsSubmit("6")(mockEvent);
 
 
     const [url, options] = fetch_args || [];
@@ -196,7 +216,7 @@ async function testAddNewAirlines(log) {
         target: mockFormAirline,
     };
 
-    await formAirlineSubmit(mockEvent);
+    await formAirlinesSubmit(mockEvent);
 
     const [url, options] = fetch_args || [];
 
@@ -242,7 +262,7 @@ async function testUpdateAirlines(log) {
     };
 
 
-    await formUpdateAirlinesSubmit("1")(mockEvent);
+    await formUpdateAirlinesSubmit(1)(mockEvent);
 
 
     const [url, options] = fetch_args || [];
@@ -254,13 +274,22 @@ async function testUpdateAirlines(log) {
 }
 
 
-function testAddNewFlights() {
-    if (true) {
+async function testAddNewFlights(log) {
+    const mockEvent = {
+        preventDefault: () => console.log("preventDefault called"),
+        target: mockFormFlight,
+    };
 
-    }
+    await formFlightsSubmit(mockEvent);
 
+    const [url, options] = fetch_args || [];
 
-    // console.assert();
+    console.assert(url === "http://127.0.0.1:5000/api/v1/flights", "Wrong URL used in fetch");
+    console.assert(options.method === "POST", "Method should be POST");
+    console.assert(options.headers["Content-type"] === "application/json", "Missing JSON header");
+    console.assert(JSON.parse(options.body).date === "2025-11-12", "Flighte date was not sent correctly");
+
+    log("testAddNewFlights passed");
 }
 
 function testUpdateFlights() {
@@ -316,6 +345,10 @@ export async function runAllTests(results) {
     fetch_args = null;
 
     await testUpdateAirlines(log);
+
+    fetch_args = null;
+
+    await testAddNewFlights(log)
 }
 
 

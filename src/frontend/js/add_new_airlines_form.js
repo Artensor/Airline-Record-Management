@@ -1,4 +1,4 @@
-export async function formAirlineSubmit(event) {
+export async function formAirlinesSubmit(event) {
     event.preventDefault();
 
     const airlineData = {

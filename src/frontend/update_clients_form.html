@@ -35,7 +35,7 @@
     </form>
     <!-- Load JavaScript file -->
     <script type="module">
-        import { getClientData, formUpdateClientSubmit } from "./js/update_clients_form.js";
+        import { getClientData, formUpdateClientsSubmit } from "./js/update_clients_form.js";
         document.addEventListener("DOMContentLoaded", () => {
 
             //get form from the page
@@ -46,7 +46,7 @@
             const id = params.get("id");
             getClientData(id, form);
             form.addEventListener("submit", async (event) => {
-                await formUpdateClientSubmit(event)
+                await formUpdateClientsSubmit(event)
                 window.location.href = "dashboard.html?tab=clients";
                 alert("Submitted");
             });

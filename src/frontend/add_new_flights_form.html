@@ -24,10 +24,14 @@
     </form>
     <!-- Load JavaScript file -->
     <script type="module">
-        import { formFlightSubmit } from "./js/add_new_flights_form.js";
+        import { formFlightsSubmit } from "./js/add_new_flights_form.js";
         document.addEventListener("DOMContentLoaded", () => {
             const form = document.getElementById("add_new_flights_form")
-            form.addEventListener("submit", formSubmit);
+            form.addEventListener("submit", async (event) => {
+                await formFlightsSubmit(event);
+                window.location.href = "dashboard.html?tab=flights";
+                alert("Submitted");
+            });
         });
 
 

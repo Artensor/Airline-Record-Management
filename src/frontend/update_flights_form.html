@@ -21,7 +21,7 @@
     </form>
     <!-- Load JavaScript file -->
     <script type="module">
-        import { getRecordData, formSubmit } from "./js/update_flights_form.js";
+        import { getFlightData, formUpdateFlightsSubmit } from "./js/update_flights_form.js";
         document.addEventListener("DOMContentLoaded", () => {
 
             //get form from the page
@@ -34,8 +34,8 @@
             const date = params.get("date");
             console.log(date);
 
-            getRecordData(client_id, airline_id, date, form);
-            form.addEventListener("submit", formSubmit(client_id, airline_id, date));
+            getFlightData(client_id, airline_id, date, form);
+            form.addEventListener("submit", formUpdateFlightsSubmit(client_id, airline_id, date));
         });
     </script>
 
